@@ -1,0 +1,219 @@
+<!-- First we are going to start with building the main page -->
+<!-- THis is going to be a default boostrap page with navbar and sidebar -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Site</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+</head>
+<body>
+	<!-- First we are going to start with a navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="#">Navbar</a>
+	    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarNav">
+	      <ul class="navbar-nav">
+	        <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#">Network Scanner</a>
+	        </li>
+	        <!-- <li class="nav-item">
+	          <a class="nav-link" href="#">Features</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" href="#">Pricing</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+	        </li> -->
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+
+    <!-- We do want to add padding here -->
+    <div class="container">
+        <!-- Content here -->
+        <div class="row">
+            <div class="col-7" style="padding-top: 10px;">
+			  <h3>Network Scanner</h3>
+			  <p>There are numerous tools to help you with you're scan. Since this is a demo site, there isn't an extensive number of supported tools
+				  provided out of the box. However, there are a few good tools included.
+			  </p>
+			  <!-- <button id="photos">Press to get photos</button>
+			  <button id="videos">Press to get videos</button> -->
+
+
+<!-- 			  <div class="card">
+				<div class="card-header" style="background-color:white; outline-color:white">
+					Nmap
+				</div>
+				<div class="card-body">
+				  This is some text within a card body.
+				</div>
+			  </div> -->
+
+
+			  	<div class="container">
+					<form>
+
+						<!-- <div class="form-group">
+							<h4>Host Discovery</h4> -->
+
+							<div class="form-group ">
+								<label for="inputHost">Host (IP address / Hostname):</label>
+								<input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
+								<small id="emailHelp" class="form-text text-muted">Port scanning is not illegal. But make sure you abide by the rules or ToS of your network</small>
+							</div>
+
+
+							<div class="form-group" style="margin-top:20px">
+								<p><b>Scan Techniques:</b></p>
+								<div class="form-check">
+									<label class="form-check-label" for="defaultCheck1">
+										<b>-sT</b> : TCP Connect Scan
+									</label>
+									<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+								</div>
+								<div class="form-check">
+									<label class="form-check-label" for="defaultCheck1">
+										<b>-sS</b> : TCP SYN Scan
+									</label>
+									<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+								</div>
+								<div class="form-check">
+									<label class="form-check-label" for="defaultCheck1">
+										<b>-sU</b> : UDP Scan
+									</label>
+									<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+								</div>
+								<div class="form-check">
+									<label class="form-check-label" for="defaultCheck1">
+										<b>-sT</b> : TCP Stealth Scan
+									</label>
+									<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+								</div>
+							</div>
+
+
+							<div class="form-group" style="margin-top:20px">
+								<p><b>Port Range:</b></p>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+									<label class="form-check-label" for="exampleRadios1">
+										Default Range (1-1000)
+									</label>
+
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+									<label class="form-check-label" for="exampleRadios2">
+										Full Range (1-65535)
+									</label>
+								</div>
+							</div>
+
+
+							<div class="form-group" style="margin-top:20px">
+								<div class="form-group">
+									
+								</div>
+							</div>
+
+						<!-- </div> -->
+
+					</form>
+
+				</div>
+
+
+			  <!-- <div id="accordion">
+				<div class="card">
+				  <div class="card-header" id="headingOne">
+					<h5 class="mb-0">
+					  <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						Collapsible Group Item #1
+					  </button>
+					</h5>
+				  </div>
+			  
+				  <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+					<div class="card-body">
+					  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+					</div>
+				  </div>
+				</div>
+				<div class="card">
+				  <div class="card-header" id="headingTwo">
+					<h5 class="mb-0">
+					  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						Collapsible Group Item #2
+					  </button>
+					</h5>
+				  </div>
+				  <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+					<div class="card-body">
+					  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+					</div>
+				  </div>
+				</div>
+				<div class="card">
+				  <div class="card-header" id="headingThree">
+					<h5 class="mb-0">
+					  <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+						Collapsible Group Item #3
+					  </button>
+					</h5>
+				  </div>
+				  <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+					<div class="card-body">
+					  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+					</div>
+				  </div>
+				</div>
+			  </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+        <div class="row">
+        	<div class="col-12">
+        		
+        	</div>
+        	
+        </div>
+    </div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="index.js"></script>
+</body>
+</html>

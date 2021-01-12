@@ -1,0 +1,27 @@
+{
+  "name": "proassignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user5423/ProAssignment.git"
+  },
+  "author": "user5423",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/user5423/ProAssignment/issues"
+  },
+  "homepage": "https://github.com/user5423/ProAssignment#readme",
+  "dependencies": {
+    "node-nmap": "^4.0.0",
+    "nodemon": "^2.0.6"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0"
+  }
+}

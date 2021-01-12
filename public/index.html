@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Site</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+</head>
+<body>
+	<!-- First we are going to start with a navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="#">GWI</a>
+	    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarNav">
+	      <ul class="navbar-nav mr-auto">
+
+          <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#" id="index">Home</a>
+            </li>
+	        <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#" id="networkScanner">Network Scanner</a>
+          </li>
+          <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#" id="dnsScanner">DNS Scanner</a>
+          </li>
+          <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#" id="firewallScanner">IDS Fingerprinter</a>
+          </li>
+        </ul>
+        
+        <ul class="navbar-nav" style="margin-left:auto">
+	       	<li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#" id="runningScans">Running Scans</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link active" aria-current="page" href="#" id="scanReports">Scan Reports</a>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+
+    <br>
+    <!-- We do want to add padding here -->
+    <div class="container" id="body">
+        <!-- Content here -->
+        <div class="row">
+            <div class="col-9" style="padding-top: 10px;">
+                <h3>GWI Reconnaisance Toolkit</h3>
+                <p>Welcome fellow pen-testers, GWI provdies a suite of reconnaisance tools accessable through a graphical user interface.
+                <br>This isn't just a GUI front to your favorite recon tools, but additionally allows you to manage scan execution and to store 
+                scan reports.</p>
+                <p>The activities we currently support include:</p>
+                <ul>
+                    <li><b>Port Scanning</b><br> - This uses nmap port scanning software to assist in fingerprinting networks</li>
+                </ul>
+                <ul>
+                    <li><b>DNS Reconnaisance</b><br> - From DNS lookups to DNS Zone transfers, this gathers as much data from DNS records</li>
+                </ul>
+                <ul>
+                    <li><b>Firewall/IDS Scanning</b><br> - This uses fragroute or wafw00f to fingerprint Firewalls and Network-based Intrusion Detection Systems</li>
+                </ul>
+                
+            <br>
+              <h3>Partners</h3>
+              <p>We parterned with a range of 3rd party entities which provide us with the security tools for information gathering</p>
+              <img src="./kali_logo.png" class="rounded float-left img-fluid" style="height:100px" alt="...">
+              <img src="./nmap_logo.png" class="rounded float-right img-fluid" style="height:100px; padding-left:25px" alt="...">
+              <img src="./msf_logo.png" class="rounded float-right img-fluid" style="height:100px; padding-left:75px" alt="...">
+        
+        
+
+	
+
+            </div>
+        </div>
+        <div class="row">
+        	<div class="col-12">
+        		
+        	</div>
+        	
+        </div>
+    </div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="index.js"></script>
+</body>
+</html>

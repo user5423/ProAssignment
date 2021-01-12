@@ -1,7 +1,7 @@
 {
   "name": "proassignment",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple web application security suite for network operations",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,8 +18,9 @@
   },
   "homepage": "https://github.com/user5423/ProAssignment#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "node-nmap": "^4.0.0",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.7"
   },
   "devDependencies": {
     "eslint": "^7.16.0"

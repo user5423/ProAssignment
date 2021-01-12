@@ -1,5 +1,5 @@
 var express = require('express');
-const util = require('util')
+// const util = require('util')
 const nmap = require('node-nmap');
 const dns = require('dns');
 // const { report } = require('process');
@@ -14,6 +14,8 @@ app.use(express.json());
 
 var runningScans = [];
 var finishedScans = [];
+
+
 
 app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
 
@@ -34,7 +36,6 @@ app.get("/networkScanner", (req, resp) => {
                             
                          "FormMethods": {"Scan Technqiues" : {
                                                     "type" : "checkbox",
-                                                    
                                                     "formItems" : ["<b>-sT</b> : TCP Connect Scan",
                                                                     "<b>-sS</b> : TCP SYN Scan",
                                                                     "<b>-sU</b> : UDP Connect Scan"]
@@ -42,14 +43,12 @@ app.get("/networkScanner", (req, resp) => {
 
                                         "Port Range": {
                                                     "type" : "radio",
-                                                    
                                                     "formItems": ["<b>-p1-1000</b> : Default Range (1-1000)",
                                                                 "<b>-p-</b> : Full Range (1-65535)"]
                                                 },
 
                                         "Additional Scan Technqiues": {
                                                     "type" :"checkbox",
-
                                                     "formItems" :["<b>-sV</b> : Service/Version Detection",
                                                                 "<b>-sC</b> : Default Nmap Scripts"]      
 
@@ -61,25 +60,6 @@ app.get("/networkScanner", (req, resp) => {
 // We need to decide how we are going to create the form
 })
 
-app.post("/networkScanner", (req, resp) => {
-    var formKeys = Object.keys(req.body);
-
-    var hostname = req.body["host"];
-
-    var params = [];
-
-    for(var i = 0; i < formKeys.length; i++){
-        var paramSwitch = formKeys[i];
-        if (paramSwitch != "host" && paramSwitch != "scanType"){
-            params.push(paramSwitch);
-        }
-    }
-    executeNmapScan(hostname, params);
-
-    resp.send();
-})
-
-
 app.get("/dnsScanner", (req, resp) => {
     const dnsMethods = {"PageStart" : `<h3>DNS Scanner</h3>
                                         <p>Using OS resolver libraries we are able to query for many different DNS records. Unfortunately,
@@ -89,8 +69,7 @@ app.get("/dnsScanner", (req, resp) => {
                                             <label for="inputHost">Host (IP address / Hostname):</label>
                                             <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
                                             <small id="emailHelp" class="form-text text-muted">Please make sure to point correctly, i.e. if you mean to point to the parent domain
-                                            than do that instead of pointing to a subdomain such as "www"</div><br>`,
-                                        
+                                            than do that instead of pointing to a subdomain such as "www"</div><br>`,                              
                             
                          "FormMethods": {"Record Types" : {
                                                     "type" : "checkbox",
@@ -105,21 +84,17 @@ app.get("/dnsScanner", (req, resp) => {
                                                                 ]
                                                 }
                                             }
-
     };
-
     resp.json(dnsMethods).send();
 })
 
 
 
-app.post("/dnsScanner", (req, resp) => {
-    console.log(req.body);
-    //Here we will grab the formKeys
+
+
+app.post("/networkScanner", (req, resp) => {
     var formKeys = Object.keys(req.body);
-
     var hostname = req.body["host"];
-
     var params = [];
 
     for(var i = 0; i < formKeys.length; i++){
@@ -128,7 +103,26 @@ app.post("/dnsScanner", (req, resp) => {
             params.push(paramSwitch);
         }
     }
-    executeDNSScan(hostname, params)
+    executeNmapScan(hostname, params);
+
+    resp.send();
+    return null;
+})
+
+
+app.post("/dnsScanner", (req, resp) => {
+    //Here we will grab the formKeys
+    var formKeys = Object.keys(req.body);
+    var hostname = req.body["host"];
+    var params = [];
+
+    for(var i = 0; i < formKeys.length; i++){
+        var paramSwitch = formKeys[i];
+        if (paramSwitch != "host" && paramSwitch != "scanType"){
+            params.push(paramSwitch);
+        }
+    }
+    executeDnsScan(hostname, params)
 
     resp.send();
     //We will then iterate and perfrom
@@ -145,41 +139,61 @@ function executeNmapScan(hostname, params){
     var arrayPosition = logScanAsRunning("nmapscan", hostname, params);
 
     nmapscan.on('complete', data => {
-        var scanDescriptor = runningScans.splice(arrayPosition, 1);
-        finishedScans.push({"scan descriptor": scanDescriptor,
-                            "scan results": data });
+        transferResultsToFinished(arrayPosition, data);
         console.log(finishedScans);
     }).on('error', data => {
-        // console.log(data); // TODO: change this so that it reflects in finished scan reports as an error
-        var scanDescriptor = runningScans.splice(arrayPosition, 1);
-        finishedScans.push({"scan descriptor": scanDescriptor,
-                            "scan results": data });
+        transferResultsToFinished(arrayPosition, data);
     });
 
     nmapscan.startScan();
+
+    return null;
 }
 
 
-function executeDNSScan(hostname, params){
+async function executeDnsScan(hostname, params){
     var arrayPosition = logScanAsRunning("dnsscan", hostname, params);
-
+    var promises = [];
+    var promise, param;
     var results = {};
     
-    for(var i = 0; i< params.length; i ++) {
-        // console.log(param);
-        var param = params[i];
-        dns.resolve(hostname, param, (err, ret) => {
-            if (ret == true){
-                results[param] = ret;
-    
+    for(var i = 0; i < params.length; i++) {
+        param = params[i];
+
+        promise = dns.promises.resolve(hostname, param).then((result) => {
+            if (result != undefined){
+                return result;
             }
-            // console.log(ret);
-            results[param] = ret;
-        })
+            return "Scan was unable to complete successfully";
+            
+        }).catch(error => {return "Scan was unable to complete successfully";});
+
+        promises.push(promise);
+        
+    }
+
+    //We are executing multiple scans here, so we need to synchronize the async operations
+    for(var j = 0; j < promises.length; j++){
+        let result = await promises[j];
+        results[params[j]] = result;
     }
     
-    console.log(results);
+    transferResultsToFinished(arrayPosition, results);
+
     return null;
+}
+
+
+
+
+
+
+//TODO: Move from array position to a map with hash IDs - avoids issues of race conditions
+function transferResultsToFinished(arrayPosition, data){
+    var scanDescriptor = runningScans.splice(arrayPosition, 1);
+    finishedScans.push({"scan descriptor": scanDescriptor,
+                        "scan results": data });
+    
 }
 
 

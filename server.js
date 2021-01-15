@@ -16,9 +16,9 @@ app.use(express.static("js"))
 app.use(express.json());
 
 
-
+//TODO: We want to change this to {} so to avoid issues with race conditions on list deletion
 var runningScans = [];
-var finishedScans = [];
+var finishedScans = getPersistentReports();
 
 
 app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
@@ -64,6 +64,24 @@ app.get("/networkScanner", (req, resp) => {
 // We need to decide how we are going to create the form
 })
 
+app.post("/networkScanner", (req, resp) => {
+    var formKeys = Object.keys(req.body);
+    var hostname = req.body["host"];
+    var params = [];
+
+    for(var i = 0; i < formKeys.length; i++){
+        var paramSwitch = formKeys[i];
+        if (paramSwitch != "host" && paramSwitch != "scanType"){
+            params.push(paramSwitch);
+        }
+    }
+    executeNmapScan(hostname, params);
+
+    resp.send();
+    return null;
+})
+
+
 app.get("/dnsScanner", (req, resp) => {
     const dnsMethods = {"PageStart" : `<h3>DNS Scanner</h3>
                                         <p>Using OS resolver libraries we are able to query for many different DNS records. Unfortunately,
@@ -93,25 +111,6 @@ app.get("/dnsScanner", (req, resp) => {
 })
 
 
-
-app.post("/networkScanner", (req, resp) => {
-    var formKeys = Object.keys(req.body);
-    var hostname = req.body["host"];
-    var params = [];
-
-    for(var i = 0; i < formKeys.length; i++){
-        var paramSwitch = formKeys[i];
-        if (paramSwitch != "host" && paramSwitch != "scanType"){
-            params.push(paramSwitch);
-        }
-    }
-    executeNmapScan(hostname, params);
-
-    resp.send();
-    return null;
-})
-
-
 app.post("/dnsScanner", (req, resp) => {
     //Here we will grab the formKeys
     var formKeys = Object.keys(req.body);
@@ -133,18 +132,32 @@ app.post("/dnsScanner", (req, resp) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //TODO: change from array to dictionary as there may be issues if multiple users were using this and the position shifted
 function executeNmapScan(hostname, params){
     nmap.nmapLocation = "nmap"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
 
-    var arrayPosition = logScanAsRunning("nmapscan", hostname, params);
+    var reportObject = logScanAsRunning("nmapscan", hostname, params);
 
     nmapscan.on('complete', data => {
-        transferResultsToFinished(arrayPosition, data);
+        transferResultsToFinished(reportObject, data);
         console.log(finishedScans);
     }).on('error', data => {
-        transferResultsToFinished(arrayPosition, data);
+        transferResultsToFinished(reportObject, data);
     });
 
     nmapscan.startScan();
@@ -152,7 +165,7 @@ function executeNmapScan(hostname, params){
     return null;
 }
 
-
+// TODO: We need to update this with the neccessary code to change from arrayPosition to reportObject for transferResultsToFinished()
 async function executeDnsScan(hostname, params){
     var arrayPosition = logScanAsRunning("dnsscan", hostname, params);
     var promises = [];
@@ -186,24 +199,53 @@ async function executeDnsScan(hostname, params){
 }
 
 
+
+
+
+
 //TODO: Move from array position to a map with hash IDs - avoids issues of race conditions
-function transferResultsToFinished(arrayPosition, data){
-    var scanDescriptor = runningScans.splice(arrayPosition, 1);
+function transferResultsToFinished(reportObject, data){
+    var arrayPosition = runningScans.indexOf(reportObject);
+    var scanDescriptor = runningScans.splice(arrayPosition,1)[0];
 
     var scanResult = {"scan descriptor": scanDescriptor,
-                      "scan results": data }
+                      "scan results": data };
 
     finishedScans.push(scanResult);
+    // console.dir(finishedScans);
     writeScanResultsToFile(scanResult);
-    
+
+    return null;
 }
 
 
+//TODO: We want to add datetime to the form
 //Logs the scan as running and returns position in array
 function logScanAsRunning(scanname, hostname, params){
-    runningScans.push({[scanname] : [hostname, params]});
-    return runningScans.length -1;
+    var runningScanReport = {"scanname": scanname,
+                             "timedate": new Date(),
+                             "hostname" :hostname,
+                             "paramaters":[params]};
+
+    runningScans.push(runningScanReport);
+                                
+    return runningScanReport;
 }
+
+function getPersistentReports(){
+    const data = fs.readFileSync("./reports.json") 
+    
+    try {
+        var temp = JSON.parse(data);
+    } catch(err){
+        console.log(err);
+        temp = [];
+    }
+    return temp;
+}
+
+
+
 
 function writeScanResultsToFile(scanResults){
     fs.readFile("reports.json", (err, data) =>{
@@ -211,8 +253,15 @@ function writeScanResultsToFile(scanResults){
             console.log(err);
         }
         else {
-            var reports = JSON.parse(data);
+
+            //In case the JSON file is corrupted or malformed, we reset it
+            try{
+                var reports = JSON.parse(data);
+            } catch(err){
+                reports = [];
+            }
             reports.push(scanResults);
+            finishedScans = reports;
         }
 
         fs.writeFile("reports.json", JSON.stringify(reports, null, 4), (err) =>{
@@ -221,6 +270,10 @@ function writeScanResultsToFile(scanResults){
     });
 
 }
+
+
+
+
 
 
 

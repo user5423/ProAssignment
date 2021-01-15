@@ -13,7 +13,7 @@ const eventToPostRequest = {"submitScanForm": submitScanForm};
 const responseHandlingDefinitions = {"networkScanner": [jsonParse, createScanPage],
                                     "dnsScanner": [jsonParse, createScanPage],
                                     "index": [htmlParse, updateBody],
-                                    "runningScans": [jsonParse, createRunningReport],
+                                    "runningScans": [jsonParse, createFinishedReportPage],
                                     "finishedScans": [jsonParse, createFinishedReport]};
 
 
@@ -99,7 +99,7 @@ function updateBody(body){
     document.getElementById("body").innerHTML = htmlDoc.getElementById("body").innerHTML;
 }
 
-
+//TODO: We need to implement both server side and client side implementation
 function submitScanForm(){
     //First we need to compile the form
     var formJson = {};
@@ -176,11 +176,36 @@ function addFormEventListeners(){
     }
 }
 
+
+function createFinishedReportPage(body){
+    // In case there are no scans
+    if (body.length == 0){
+        var message = `<h4>No Completed Reports</h4><br><p> There were no completed scans detected, be that in this session, or previous sessions.</p>
+         <p>To populate this page, please select one of the scanning operations, and wait until completion before returning here</p>`
+        document.getElementById("body").innerHTML = message;
+        return;
+    }
+
+    var reports = {};
+    for(var i = 0; i < body.length; i++){
+        reports[i] = createRunningReport(body[i]);
+
+    }
+
+
+
+
+}
+
+
+
+
 //TODO: CHeck that scanType and hostname are pulling from the right array/obj ref/indexes
 function createRunningReport(body){
+    console.dir(body);
     var scanDescriptor = body["scan descriptor"];
     var scanResults = body["scan results"];
-
+    console.log(Object.keys(scanDescriptor));
     var scanType = Object.keys(scanDescriptor[0])[0];
     var hostname = Object.keys(scanDescriptor[0])[1];
     var datetime = 0; //TODO: Add datetime to the scan submit

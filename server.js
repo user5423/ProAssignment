@@ -1,7 +1,10 @@
+
+
 var express = require('express');
-// const util = require('util')
+var fs = require("fs");
 const nmap = require('node-nmap');
 const dns = require('dns');
+// const util = require('util')
 // const { report } = require('process');
 
 var app = express();
@@ -12,9 +15,10 @@ app.use(express.static("js"))
 
 app.use(express.json());
 
+
+
 var runningScans = [];
 var finishedScans = [];
-
 
 
 app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
@@ -87,8 +91,6 @@ app.get("/dnsScanner", (req, resp) => {
     };
     resp.json(dnsMethods).send();
 })
-
-
 
 
 
@@ -184,20 +186,17 @@ async function executeDnsScan(hostname, params){
 }
 
 
-
-
-
-
 //TODO: Move from array position to a map with hash IDs - avoids issues of race conditions
 function transferResultsToFinished(arrayPosition, data){
     var scanDescriptor = runningScans.splice(arrayPosition, 1);
-    finishedScans.push({"scan descriptor": scanDescriptor,
-                        "scan results": data });
+
+    var scanResult = {"scan descriptor": scanDescriptor,
+                      "scan results": data }
+
+    finishedScans.push(scanResult);
+    writeScanResultsToFile(scanResult);
     
 }
-
-
-
 
 
 //Logs the scan as running and returns position in array
@@ -205,6 +204,24 @@ function logScanAsRunning(scanname, hostname, params){
     runningScans.push({[scanname] : [hostname, params]});
     return runningScans.length -1;
 }
+
+function writeScanResultsToFile(scanResults){
+    fs.readFile("reports.json", (err, data) =>{
+        if (err) {
+            console.log(err);
+        }
+        else {
+            var reports = JSON.parse(data);
+            reports.push(scanResults);
+        }
+
+        fs.writeFile("reports.json", JSON.stringify(reports, null, 4), (err) =>{
+            if (err) {console.log(err);}})
+        
+    });
+
+}
+
 
 
 

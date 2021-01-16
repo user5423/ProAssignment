@@ -17,17 +17,13 @@ const responseHandlingDefinitions = {"networkScanner": [jsonParse, createScanPag
                                     "runningScans": [jsonParse, createRunningReportPage],
                                     "finishedScans": [jsonParse, createFinishedReportPage]};
 
-
 var domEventDefinitions = {"type": {"radio": setRadioStatus,
                                     "checkbox": setCheckboxStatus},
                            
                             "data-toggle":{"collapse": toggleComponent}
                         };
 
-
-
 var currentLoadedPage = "index";
-
 
 var componentLinkVals = 0;
 
@@ -35,12 +31,9 @@ var componentLinkVals = 0;
 
 // Event listeners
 
-
-
 //Explain decision to use click event listener
 window.addEventListener("click", event => {
     var resourcePath, eventTarget, eventTargetID;
-
     //Event targets are just node interface objects with extended methods for event handling
     eventTarget = event.target;
     // We need to define how the definitions below will work
@@ -49,24 +42,22 @@ window.addEventListener("click", event => {
     if ((resourcePath = eventToGetRequest[eventTargetID]) != undefined) {
         updateDomByGetRequest(eventTargetID, resourcePath);
         currentLoadedPage = eventTargetID;
-    } 
-    
-    else if ((resourcePath = eventToPostRequest[eventTargetID]) != undefined) {
+    } else if ((resourcePath = eventToPostRequest[eventTargetID]) != undefined) {
         submitScanForm(currentLoadedPage);
-    }
-    else {
+    } else {
         checkDomEvents(eventTarget);
         console.log("This event id isn't registered");
     }
-
+    return null;
 })
 
 
 //TODO-F: Maybe repurpose this function to take parameters so that it isn't hardcoded
 function addFormEventListeners(){
-    var elementsToListen = document.getElementsByTagName("input");
+    var elementsToListen, element;
+    elementsToListen = document.getElementsByTagName("input");
     for (var i = 0; i < elementsToListen.length; i++){
-        var element =  elementsToListen[i];
+        element =  elementsToListen[i];
         if(element.type == 'radio'){ 
             element.addEventListener("click", setRadioStatus(this));
         }
@@ -77,6 +68,7 @@ function addFormEventListeners(){
             console.log("nothing");
         }
     }
+    return null;
 }
 
 
@@ -102,20 +94,18 @@ function htmlParse(response){ return response.text();}
 
 
 function checkDomEvents(eventTarget){
-    console.log(eventTarget);
-    for(var key in domEventDefinitions){
-        for (var value in domEventDefinitions[key]){
+    var key, value;
+    for(key in domEventDefinitions){
+        for (value in domEventDefinitions[key]){
             if (key == "class"){
                 if (eventTarget.classList.contains(value)){
                     domEventDefinitions[key][value](eventTarget);
                 }
-            }
-            else if (eventTarget.getAttribute(key) == value) {
+            } else if (eventTarget.getAttribute(key) == value) {
                 domEventDefinitions[key][value](eventTarget);
                 return true;
             }
         }
-
     }
     return false;
 }
@@ -158,17 +148,16 @@ function updateBody(body){
 
 //TODO: We need to implement both server side and client side implementation
 function submitScanForm(){
-    //First we need to compile the form
+    var input, label, item, hostInput, formCheckCollection, i;
     var formJson = {};
-    var input, label, item;
 
     //Every scan has a host input, so we can hardcode this in
-    var hostInput = document.getElementById("inputHost").value;
+    hostInput = document.getElementById("inputHost").value;
     formJson["host"] = hostInput;
 
     //This gets the active checkboxes and radioboxes
-    var formCheckCollection = document.getElementsByClassName("form-check");
-    for(var i = 0; i < formCheckCollection.length; i++){
+    formCheckCollection = document.getElementsByClassName("form-check");
+    for(i = 0; i < formCheckCollection.length; i++){
         item = formCheckCollection[i];
         input = item.children[0];
         label = item.children[1];
@@ -177,8 +166,7 @@ function submitScanForm(){
             if (input.value == "true"){
                 formJson[label.getElementsByTagName("b")[0].innerText] = input.value;
             }
-        }
-        else {
+        } else {
             formJson[label.innerText] = input.value;
         }
         formJson.scanType = currentLoadedPage;
@@ -198,12 +186,13 @@ function submitScanForm(){
 }
 
 function createScanPage(body){
+    var htmlBio, htmlForm, bodyContainer;
     // TODO fomalize howe we add html together
-    var htmlBio = createBio(body["PageStart"]);
-    var htmlForm = createForm(body["FormMethods"]);
-    var bodyContainer = html2element(`<div class="row"></div>`)
+    htmlBio = createBio(body["PageStart"]);
+    htmlForm = createForm(body["FormMethods"]);
+    bodyContainer = html2element(`<div class="row"></div>`)
 
-    appendInnerHTML(bodyContainer, "<div class=\"col-12\" style=\"padding-top: 10px;\">");
+    appendInnerHTML(bodyContainer, "<div>");
     bodyContainer.children[0].innerHTML = htmlBio + htmlForm;
     document.getElementById("body").innerHTML = bodyContainer.innerHTML;
 
@@ -219,27 +208,20 @@ function createBio(htmlString){
 }
 
 function createForm(formMethods){ 
-    var formElement = document.createElement("form");
-    var itemCounter = 0;
-    var sectionCounter = 0;
-    var item;
+    var item, itemType, itemCounter, sectionCounter, section;
+    var formElement, formGroup, formItemHTML, i;
 
-    for (var section in formMethods){
-        sectionCounter += 1;
-        var formGroup = document.createElement("div");
-        formGroup.setAttribute("class", "form-group");
-        formGroup.innerHTML = `<p><b>${section}</b></p>`;      
-        var itemType = formMethods[section]["type"];
+    formElement = document.createElement("form");
+    itemCounter = 0, sectionCounter = 0;
 
-        for (var i = 0; i< formMethods[section]["formItems"].length; i++){
+    for (section in formMethods){
+        formGroup = html2element(`<div class="form-group"><p><b>${section}</b></p></div>`);
+        itemType = formMethods[section]["type"];
+
+        for (i = 0; i < formMethods[section]["formItems"].length; i++){
             item = formMethods[section]["formItems"][i];
-            itemCounter += 1;
-            var formItemHTML = `
-                <div class="form-check">
-                    <input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${sectionCounter}" >
-                    <label class="form-check-label" for="defaultCheck${itemCounter}">${item}</label>
-                </div>`;
-
+            formItemHTML = `<div class="form-check"><input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${++sectionCounter}" >
+                            <label class="form-check-label" for="defaultCheck${++itemCounter}">${item}</label></div>`;
             appendInnerHTML(formGroup, formItemHTML);
         }
 
@@ -249,8 +231,6 @@ function createForm(formMethods){
 
     // Replaced button with div in order to fix behaviour bug that was caused by bs4's javascript code
     appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary">Submit</div>`)
-
-
     return formElement.outerHTML;
 }
 
@@ -261,10 +241,7 @@ function createForm(formMethods){
 
 
 
-// Form Validation:
-
-
-
+// Form Validation //           TODO: This section needs to be finished
 
 
 
@@ -273,73 +250,61 @@ function createForm(formMethods){
 
 
 
-//TODO: We want to be able to create a search bar for 
-function createRunningReportPage(body){
 
+//TODO: Finish or remove a functional search bar
+function createRunningReportPage(body){
+    var pageHeader, message, spinner, accordion, i;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
-    var pageHeader = `<h3>Running Scans</h3><br>`;
+    pageHeader = `<h3>Running Scans</h3><br>`;
     appendInnerHTML(document.getElementById("body"), pageHeader);
 
     // In case there are no scans, we return an error message
     if (body.length == 0){
-        var message = `<p> There are no currently running scans detected. To populate this page, you need to initiate a scan.</p><p>We are attempting to detect new submitted scan requests. Are you expecting a scan to be here? It's
-        possible that the scan is incredibly fast that it went straight to the finished scans section</p>`;
-        var spinner = `<div class="text-center"><div class="spinner-border" role="status"></div></div>`;
-        appendInnerHTML(document.getElementById("body"), message);
-        appendInnerHTML(document.getElementById("body"), spinner);
-        return;
+        message = `<p> There are no currently running scans detected. To populate this page, you need to initiate a scan.</p><p>We are attempting to detect new submitted scan requests. Are you expecting a scan to be here? It's
+                        possible that the scan is incredibly fast that it went straight to the finished scans section</p>`;
+        spinner = `<div class="text-center"><div class="spinner-border" role="status"></div></div>`;
+        appendInnerHTML(document.getElementById("body"), message+spinner);
+        return null;
     }
 
-    //If there are running scans
-
     //We create an empty accordion that will parent the card reports
-    var accordion = document.createElement("div");
-    accordion.classList.add("accordion");
-    accordion.id = "accordion";
-
-    var search2 = `<input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter scan title"><br>`;
-    appendInnerHTML(document.getElementById("body"), search2);
-
-    for(var i = 0; i < body.length; i++){
+    accordion = html2element(`<div class="accordion" id="accordion"></div>`);
+    for(i = 0; i < body.length; i++){
         accordion.appendChild(createRunningReport(body[i]));
     }
 
     appendInnerHTML(document.getElementById("body"), accordion.outerHTML);
-
     return null;
 }
 
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
+    var runningReport, finishedReport, message, pageHeader, accordion, i;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
-    var pageHeader = `<h3>Finished Scans</h3><p>Been waiting a while? Depending on what scan you chose and it's parameters, it can take from a couple of seconds, to even a couple of hours. 
-                        However, we've tried to limit what types of scans you have access to, so at the most, it shouldn't take more than ten minutes.</p><br>`;
+    pageHeader = `<h3>Finished Scans</h3><p>Been waiting a while? Depending on what scan you chose and it's parameters, it can take from a couple of seconds, to even a couple of hours. 
+                        However, I've tried to limit what types of scans you have access to, so at the most, it shouldn't take more than ten minutes.</p>
+                    <p>While you are waiting why don't you take a look at the below scans by clicking on the scan titles, and look at their respective results</p><br>`;
     appendInnerHTML(document.getElementById("body"), pageHeader);
 
     // In case there are no scans, we return an error message
     if (body.length == 0){
-        var message = `<p> There are no finished scans detected in this current session or in previous sessions. To populate this page, you need to complete a scan.`;
+        message = `<p> There are no finished scans detected in this current session or in previous sessions. To populate this page, you need to complete a scan.`;
         appendInnerHTML(document.getElementById("body"), message);
-        return null;
+
+    } else {
+        //We create an empty accordion that will parent the card reports
+        accordion = html2element(`<div class="accordion" id="accordion"></div>`);
+        for (i = 0; i< body.length; i++){
+            //From this runningReport we are going to extend it to a result one
+            runningReport = createRunningReport(body[i]["scan descriptor"]);
+            finishedReport = completeRunningReport(runningReport, body[i]).outerHTML;
+            appendInnerHTML(accordion, finishedReport);
+        }
+
+        appendInnerHTML(document.getElementById("body"), accordion.outerHTML);
     }
-
-    //If there are running scans
-    //We create an empty accordion that will parent the card reports
-    var accordion = document.createElement("div");
-    accordion.classList.add("accordion");
-    accordion.id = "accordion";
-
-    for (var i = 0; i< body.length; i++){
-        //From this runningReport we are going to extend it to a result one
-        var runningReport = createRunningReport(body[i]["scan descriptor"]);
-        var finishedReport = completeRunningReport(runningReport, body[i]).outerHTML;
-        appendInnerHTML(accordion, finishedReport);
-    }
-
-    appendInnerHTML(document.getElementById("body"), accordion.outerHTML);
-
     return null;
 }
 
@@ -354,61 +319,30 @@ function completeRunningReport(runningReport, body){
     }
 }
 
-//TODO: Make this function into a genericScanReport function
-//TODO: Change body parameter to a different name (more representative)
-function createScanReport(runningReport, body){
-    var  keys1, key, key1, value, value1, j, i;
-    //We create an empty table
-    var table = html2element(`<table class="table"><tbody></tbody></table>`);
+//Adds a scan report to a original pre-existing running report card
+function createScanReport(runningReport, scanObject){
+    var key, resultKeys, value, row, table, table1, i;
+    table = html2element(`<table class="table"><tbody></tbody></table>`);
     //For each entry in result we add a new row to the table
-    var keys = Object.keys(body["scan results"]);
+    resultKeys = Object.keys(scanObject["scan results"]);
 
-    for (i = 0; i<keys.length; i++){
-        //TODO: Rename key to something else
-        key = keys[i];
-        value = body["scan results"][key];
+    for (i = 0; i < resultKeys.length; i++){    
+        key = resultKeys[i], value = scanObject["scan results"][key] 
 
-
-        //TODO: Consider rearranigng this to reduce the amount of code
         if (Array.isArray(value) && value.length > 1 && isObject(value[0])) {
-            var tableHeaders = Object.keys(value[0]);
-            var table1 = html2element(`<table class="table"><thead><tr><th scope="col">${tableHeaders.join(`</th><th scope="col">`)}</th></tr></thead><tbody></tbody></table>`);
-            //This assumes that the value is an object containing a key:value 
-            for (j = 0; j < value.length; j++){
-                var values1 = Object.values(value[j]);
-                var row1 = `<tr><td>${values1.join("</td><td>")}</td></tr>`;
-                appendInnerHTML(table1.children[1], row1);
-            }
-
-        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
+            table1 = createNestedObjectTable(value)
+            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
 
         } else if (isObject(value)){
-            table1 = html2element(`<table class="table"><tbody></tbody></table>`);
-            keys1 = Object.keys(value);
-
-            for (j = 0; j< keys1.length; j++){
-                key1 = keys1[j];
-                value1 = value[key1];
-                row = `<tr><th scope="row">${key1}</th><td>${value1}</td></tr>`;
-                appendInnerHTML(table1.children[0], row);
-            }
-        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+            table1 = createTable(value, `<tr><th scope="row">{key}</th><td>{value}</td></tr>`)
+            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
 
         } else if (Array.isArray(value) && value.length > 1) {
-            table1 = html2element(`<table class="table"><tbody></tbody></table>`);
-            keys1 = Object.keys(value);
-
-            for (j = 0; j < keys1.length; j++){
-                key1 = keys1[j];
-                value1 = value[key1];
-                row = `<tr><td>${value1}</td></tr>`;
-                appendInnerHTML(table1.children[0], row);
-            }
-            
-        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+            table1 = createTable(value, `<tr><td>{value}</td></tr>`)          
+            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
         
         } else {
-            var row = `<tr><th scope="row">${key}</th><td>${value}</td></tr>`;
+            row = `<tr><th scope="row">${key}</th><td>${value}</td></tr>`;
             appendInnerHTML(table.children[0], row);
         }
     }
@@ -418,15 +352,28 @@ function createScanReport(runningReport, body){
     return runningReport;
 }
 
-
-function createTable(keys, values, rowStructure){
-    var table = `<table class="table"><tbody></tbody></table>`;
-    for (var j = 0; j< keys.length; j++){
-        var key = keys[j];
-        var value = values[key];
-        var row = rowStructure.replace("{key}", key).replace("{value}", value);
-        // `<tr><th scope="row">{key}</th><td>{value}</td></tr>`
+//This creates a table where the parameters input format is key:value items
+function createTable(values, rowStructure){
+    var key, keys, row, value, table;
+    table = html2element(`<table class="table"><tbody></tbody></table>`);
+    keys = Object.keys(values);
+    for (var j = 0; j < keys.length; j++){
+        key = keys[j], value = values[key];
+        row = rowStructure.replace("{key}", key).replace("{value}", value);
         appendInnerHTML(table.children[0], row);
+    }
+    return table
+}
+
+//This creates a table where the parameters input format is key:value items
+function createNestedObjectTable(values){
+    var tableHeaders, table, values1, rows, j;
+    tableHeaders = Object.keys(values[0]);
+    table = html2element(`<table class="table"><thead><tr><th scope="col">${tableHeaders.join(`</th><th scope="col">`)}</th></tr></thead><tbody></tbody></table>`);
+    for (j = 0; j < values.length; j++){
+        values1 = Object.values(values[j]);
+        rows = `<tr><td>${values1.join("</td><td>")}</td></tr>`;
+        appendInnerHTML(table.children[1], rows);
     }
     return table
 }
@@ -441,27 +388,25 @@ function createTable(keys, values, rowStructure){
 
 
 
-function createRunningReport(scanDescriptor){
-    return createReportCardHeader(scanDescriptor);
-}
+function createRunningReport(scanDescriptor){return createReportCardHeader(scanDescriptor);}
+
+
+//The card header has two components:
+    //The title of the card that will always be visible
+    //The descriptor of the card that will come below it
 
 //This takes in the scanDescriptor and creates a html block for it
 //TODO: We need to consider all the different data-toggle and data-target values here
 //TODO: We need to dynamically assign classes or attributes for js bs4 operations. i.e. words like "one", "two" from stuff like data-target attribute
 function createReportCardHeader(scanDescriptor){
-    var scanColorCode = {"nmapscan": "background-color:#563d7c",
-                         "dnsscan": "background-color:#18AB54",
-                         "idsscan": "background-color:#18ABA1"}
+    var scanColor, scanColorCode, linkVal;
+    scanColorCode = {"nmapscan": "background-color:#563d7c",
+                     "dnsscan": "background-color:#18AB54",
+                     "idsscan": "background-color:#18ABA1"}
 
-    var scanColor = scanColorCode[scanDescriptor.scanname];
-    var linkVal = componentLinkVals.toString();
-    componentLinkVals += 1;
+    scanColor = scanColorCode[scanDescriptor.scanname];
+    linkVal = String(componentLinkVals++);
 
-    //The card header has two components:
-        //The title of the card that will always be visible
-        //The descriptor of the card that will come below it
-    
-    //TODO: We need the colours to be dependent on the type of scan. we also need the attributes to by dynamic asweel such as those with values "one", "two"
     //Building the card title structure
     var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor}"></div>`);
     //Populating card title data
@@ -473,6 +418,7 @@ function createReportCardHeader(scanDescriptor){
     var scanDescription = html2element(`<div id="collapse${linkVal}" class="collapse" aria-labelledby="heading${linkVal}" data-parent="#accordion"><div class="card-body"></div></div>`)
     scanDescription.innerHTML =`<div class="card-body"></div>`;
     var parameters = scanDescriptor.parameters;
+
     //Populating title description data
     if (Object.keys(parameters).length > 0){
         scanDescription.children[0].innerHTML = `<h5>Scan Parameters</h5> <b>${parameters.join("</b><b>")}</b> </h5>`;    
@@ -489,28 +435,20 @@ function createReportCardHeader(scanDescriptor){
     return card;
 }
 
-function createReportCardBody(scanResults){
-    //It's important to note that the report body that we are making is actually just an extension of the report body created by the reportCardHeader
-    return scanResults;
-}
 
 
 
 
 
-
-
-
-
-
-// Responsive methods
+// Responsive Component methods
 
 
 //This assumes that all the radio's are false to begin with
 function setRadioStatus(element){
+    var elements, i;
     element.value = "true";
-    var elements = document.getElementsByName(element.name);
-    for (var i = 0; i< elements.length; i++){
+    elements = document.getElementsByName(element.name);
+    for (i = 0; i< elements.length; i++){
         if(elements[i].value == "true" && elements[i] != element) {
             elements[i].value = "false";
         }
@@ -520,8 +458,7 @@ function setRadioStatus(element){
 function setCheckboxStatus(element){
     if (element.value == "true"){
         element.value = "false";
-    }
-    else {
+    } else {
         element.value = "true";
     }
 }
@@ -538,7 +475,7 @@ function toggleComponent(eventTarget){
 
 
 
-// Helper functions
+// Helper dom functions
 
 function appendInnerHTML(element, newInnerHTML){
     var originalInnerHTML = element.innerHTML;

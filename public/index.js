@@ -20,7 +20,7 @@ const responseHandlingDefinitions = {"networkScanner": [jsonParse, createScanPag
 
 var domEventDefinitions = {"type": {"radio": setRadioStatus,
                                     "checkbox": setCheckboxStatus},
-                           "class": {"card": toggleAccordionVisibility},
+                           
                             "data-toggle":{"collapse": toggleComponent}
                         };
 
@@ -29,10 +29,11 @@ var domEventDefinitions = {"type": {"radio": setRadioStatus,
 var currentLoadedPage = "index";
 
 
+var componentLinkVals = 0;
+
 
 
 // Event listeners
-
 
 
 
@@ -61,7 +62,6 @@ window.addEventListener("click", event => {
 })
 
 
-
 //TODO-F: Maybe repurpose this function to take parameters so that it isn't hardcoded
 function addFormEventListeners(){
     var elementsToListen = document.getElementsByTagName("input");
@@ -85,12 +85,6 @@ function addFormEventListeners(){
 // Parsing Methods //
 
 
-
-
-
-
-
-
 function jsonParse(response){ return response.json();}
 
 function htmlParse(response){ return response.text();}
@@ -103,18 +97,7 @@ function htmlParse(response){ return response.text();}
 
 
 
-
-
 //Dom Manipulation and Checking Methods //
-
-
-
-
-
-
-
-
-
 
 
 
@@ -151,7 +134,7 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
         console.log(err);
         document.getElementsById("body").innerHTML = "<b>We were unable to load the page</b>";
     }   
-
+    return null;
 }
 
 
@@ -171,13 +154,6 @@ function updateBody(body){
 
 
 // Form Methods //
-
-
-
-
-
-
-
 
 
 //TODO: We need to implement both server side and client side implementation
@@ -225,18 +201,14 @@ function createScanPage(body){
     // TODO fomalize howe we add html together
     var htmlBio = createBio(body["PageStart"]);
     var htmlForm = createForm(body["FormMethods"]);
+    var bodyContainer = html2element(`<div class="row"></div>`)
 
-    var bodyContainer = document.createElement("div");
-    bodyContainer.setAttribute("class", "row");
-
-    appendInnerHTML(bodyContainer, "<div class=\"col-9\" style=\"padding-top: 10px;\">");
+    appendInnerHTML(bodyContainer, "<div class=\"col-12\" style=\"padding-top: 10px;\">");
     bodyContainer.children[0].innerHTML = htmlBio + htmlForm;
-    
     document.getElementById("body").innerHTML = bodyContainer.innerHTML;
 
     addFormEventListeners();
-    
-
+    return null;
 }
 
 
@@ -252,7 +224,7 @@ function createForm(formMethods){
     var sectionCounter = 0;
     var item;
 
-    for(var section in formMethods) {
+    for (var section in formMethods){
         sectionCounter += 1;
         var formGroup = document.createElement("div");
         formGroup.setAttribute("class", "form-group");
@@ -282,10 +254,7 @@ function createForm(formMethods){
     return formElement.outerHTML;
 }
 
-function appendInnerHTML(element, newInnerHTML){
-    var originalInnerHTML = element.innerHTML;
-    element.innerHTML = originalInnerHTML + newInnerHTML;
-}
+
 
 
 
@@ -300,181 +269,223 @@ function appendInnerHTML(element, newInnerHTML){
 
 
 
-
-
-
-
-
-
-
 // Report Methods //            TODO: This section needs ot be finished
 
 
 
-
-
-
-
-//TODO: Finish this function
+//TODO: We want to be able to create a search bar for 
 function createRunningReportPage(body){
-    //We first create an empty accordion that will parent the card reports
+
+    //Create default header for webpage
+    document.getElementById("body").innerHTML = "";
+    var pageHeader = `<h3>Running Scans</h3><br>`;
+    appendInnerHTML(document.getElementById("body"), pageHeader);
+
+    // In case there are no scans, we return an error message
+    if (body.length == 0){
+        var message = `<p> There are no currently running scans detected. To populate this page, you need to initiate a scan.</p><p>We are attempting to detect new submitted scan requests. Are you expecting a scan to be here? It's
+        possible that the scan is incredibly fast that it went straight to the finished scans section</p>`;
+        var spinner = `<div class="text-center"><div class="spinner-border" role="status"></div></div>`;
+        appendInnerHTML(document.getElementById("body"), message);
+        appendInnerHTML(document.getElementById("body"), spinner);
+        return;
+    }
+
+    //If there are running scans
+
+    //We create an empty accordion that will parent the card reports
     var accordion = document.createElement("div");
     accordion.classList.add("accordion");
     accordion.id = "accordion";
 
+    var search2 = `<input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter scan title"><br>`;
+    appendInnerHTML(document.getElementById("body"), search2);
 
-    console.log(body);
-    console.log("yo")
-    // In case there are no scans
-    if (body.length == 0){
-        var message = `<h4>No Running Scans</h4><br><p> There are no currently running scans detected. To populate this page, you need to initiate a scan.`
-        document.getElementById("body").innerHTML = message;
-        return;
-    }
-    //If there are running scans
-    var reports = [];
     for(var i = 0; i < body.length; i++){
-        reports[i] = createRunningReport(body[i]);
-        accordion.appendChild(reports[i]);
-
+        accordion.appendChild(createRunningReport(body[i]));
     }
-    console.log(reports);
-    document.getElementById("body").innerHTML = accordion.outerHTML;
+
+    appendInnerHTML(document.getElementById("body"), accordion.outerHTML);
+
+    return null;
 }
 
-function createFinishedReportPage(body){return body;}
+//TODO: Rename the parameter body to something else more representative
+function createFinishedReportPage(body){
+    //Create default header for webpage
+    document.getElementById("body").innerHTML = "";
+    var pageHeader = `<h3>Finished Scans</h3><p>Been waiting a while? Depending on what scan you chose and it's parameters, it can take from a couple of seconds, to even a couple of hours. 
+                        However, we've tried to limit what types of scans you have access to, so at the most, it shouldn't take more than ten minutes.</p><br>`;
+    appendInnerHTML(document.getElementById("body"), pageHeader);
 
+    // In case there are no scans, we return an error message
+    if (body.length == 0){
+        var message = `<p> There are no finished scans detected in this current session or in previous sessions. To populate this page, you need to complete a scan.`;
+        appendInnerHTML(document.getElementById("body"), message);
+        return null;
+    }
 
+    //If there are running scans
+    //We create an empty accordion that will parent the card reports
+    var accordion = document.createElement("div");
+    accordion.classList.add("accordion");
+    accordion.id = "accordion";
 
-// Example json report for a finished scan. A running scan, only contains the "scan descriptor" key
-// 
-// [
-//     {
-//         "scan descriptor": {
-//             "scanname": "dnsscan",
-//             "timedate": "2021-01-15T17:53:37.497Z",
-//             "hostname": "google.com",
-//             "paramaters": [
-//                 [
-//                     "A",
-//                     "AAAA",
-//                     "CNAME"
-//                 ]
-//             ]
-//         },
-//
-//         "scan results": {
-//             "A": [
-//                 "216.58.213.14"
-//             ],
-//             "AAAA": [
-//                 "2a00:1450:4009:816::200e"
-//             ],
-//             "CNAME": "Scan was unable to complete successfully"
-//         }
-//     }
-// ]
+    for (var i = 0; i< body.length; i++){
+        //From this runningReport we are going to extend it to a result one
+        var runningReport = createRunningReport(body[i]["scan descriptor"]);
+        var finishedReport = completeRunningReport(runningReport, body[i]).outerHTML;
+        appendInnerHTML(accordion, finishedReport);
+    }
 
+    appendInnerHTML(document.getElementById("body"), accordion.outerHTML);
 
-
-//TODO: CHeck that scanType and hostname are pulling from the right array/obj ref/indexes
-function createRunningReport(body){
-    
-    //We get the resources from the above variable
-    // var scanDescriptor = body["scan descriptor"];   //This describes the scan - i.e. scan type, time, hostname, parameters
-    // var scanResults = body["scan results"];         //This contains the results of the scan
-    console.log("hmm");
-    console.log(body);
-    var scanDescriptor = body;
-
-    //Let's create the accordion
-    // var accordion = document.createElement("div");
-    // accordion.classList.add("accordion");
-    // accordion.id = "accordion";
-
-    //TODO: Color needs to be dependent on the scan type
-    //First we create the scan title for the card
-    var card = document.createElement("dummy");
-    card.innerHTML = `<div class="card-header" id="headingOne" style="background-color:#563d7c">`; // TODO: We need to make this dynamic headingOne
-    card = card.children[0];
-
-    //TODO: Move from a static cardNumber value to dynamic -- NOTE: We need to consider that these might not be contiguous after we delete some of the reports
-    var reportCardDescriptor = createReportCardHeader(scanDescriptor, 0);
-
-    return reportCardDescriptor;
-
+    return null;
 }
-    //NOTE: We are going to ignore this for now
-    //TODO: Fix, finish and move the below code over to the createfinishedReport function
 
-    // //Scan results
-    // var scanResultHTML = document.createElement("dummy");
-    // scanResultHTML.innerHTML = `<table class="table"><tbody></tbody></table>`;
-    // scanResultHTML = scanResultHTML.innerHTML;
-    
-    // var scanResultKeys = Object.keys(scanDescriptor[0])[0];
-    // for (var i = 0; i< scanResults; i++){
-    //     // if //scanResults
-    //     // appendInnerHTML(scanResultsHTML.children[0].children[0], `<tr><th scope="row">${}</th><td>${}</td></tr>`);
+//This should have a scan results and scan descriptor on body
+function completeRunningReport(runningReport, body){
+    if (body["scan descriptor"].scanname == "dnsscan"){
+        return createScanReport(runningReport, body);
+    } else if (body["scan descriptor"].scanname == "nmapscan"){
+        return createScanReport(runningReport, body);
+    } else {
+        console.log("Incorrect report created");
+    }
+}
 
-    // }
+//TODO: Make this function into a genericScanReport function
+//TODO: Change body parameter to a different name (more representative)
+function createScanReport(runningReport, body){
+    var  keys1, key, key1, value, value1, j, i;
+    //We create an empty table
+    var table = html2element(`<table class="table"><tbody></tbody></table>`);
+    //For each entry in result we add a new row to the table
+    var keys = Object.keys(body["scan results"]);
 
-    // return null;
-// }
+    for (i = 0; i<keys.length; i++){
+        //TODO: Rename key to something else
+        key = keys[i];
+        value = body["scan results"][key];
 
 
-//This is used by both running scans and finished scans
-//This takes in the scanDescriptor and create a html block for it
+        //TODO: Consider rearranigng this to reduce the amount of code
+        if (Array.isArray(value) && value.length > 1 && isObject(value[0])) {
+            var tableHeaders = Object.keys(value[0]);
+            var table1 = html2element(`<table class="table"><thead><tr><th scope="col">${tableHeaders.join(`</th><th scope="col">`)}</th></tr></thead><tbody></tbody></table>`);
+            //This assumes that the value is an object containing a key:value 
+            for (j = 0; j < value.length; j++){
+                var values1 = Object.values(value[j]);
+                var row1 = `<tr><td>${values1.join("</td><td>")}</td></tr>`;
+                appendInnerHTML(table1.children[1], row1);
+            }
+
+        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
+
+        } else if (isObject(value)){
+            table1 = html2element(`<table class="table"><tbody></tbody></table>`);
+            keys1 = Object.keys(value);
+
+            for (j = 0; j< keys1.length; j++){
+                key1 = keys1[j];
+                value1 = value[key1];
+                row = `<tr><th scope="row">${key1}</th><td>${value1}</td></tr>`;
+                appendInnerHTML(table1.children[0], row);
+            }
+        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+
+        } else if (Array.isArray(value) && value.length > 1) {
+            table1 = html2element(`<table class="table"><tbody></tbody></table>`);
+            keys1 = Object.keys(value);
+
+            for (j = 0; j < keys1.length; j++){
+                key1 = keys1[j];
+                value1 = value[key1];
+                row = `<tr><td>${value1}</td></tr>`;
+                appendInnerHTML(table1.children[0], row);
+            }
+            
+        appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+        
+        } else {
+            var row = `<tr><th scope="row">${key}</th><td>${value}</td></tr>`;
+            appendInnerHTML(table.children[0], row);
+        }
+    }
+
+    //Now that we have created the table with populated values, we need to merge it with the original running report
+    appendInnerHTML(runningReport.children[1].children[0], `<hr><h5>Scan Results</h5>${table.outerHTML}`);
+    return runningReport;
+}
+
+
+function createTable(keys, values, rowStructure){
+    var table = `<table class="table"><tbody></tbody></table>`;
+    for (var j = 0; j< keys.length; j++){
+        var key = keys[j];
+        var value = values[key];
+        var row = rowStructure.replace("{key}", key).replace("{value}", value);
+        // `<tr><th scope="row">{key}</th><td>{value}</td></tr>`
+        appendInnerHTML(table.children[0], row);
+    }
+    return table
+}
+
+
+
+
+
+
+
+
+
+
+
+function createRunningReport(scanDescriptor){
+    return createReportCardHeader(scanDescriptor);
+}
+
+//This takes in the scanDescriptor and creates a html block for it
 //TODO: We need to consider all the different data-toggle and data-target values here
 //TODO: We need to dynamically assign classes or attributes for js bs4 operations. i.e. words like "one", "two" from stuff like data-target attribute
-function createReportCardHeader(scanDescriptor, cardNumber){
+function createReportCardHeader(scanDescriptor){
+    var scanColorCode = {"nmapscan": "background-color:#563d7c",
+                         "dnsscan": "background-color:#18AB54",
+                         "idsscan": "background-color:#18ABA1"}
+
+    var scanColor = scanColorCode[scanDescriptor.scanname];
+    var linkVal = componentLinkVals.toString();
+    componentLinkVals += 1;
+
     //The card header has two components:
-
         //The title of the card that will always be visible
-
         //The descriptor of the card that will come below it
-    console.log(scanDescriptor)
-    var scanname = scanDescriptor.scanname;
-    var timedate = scanDescriptor.timedate;
-    var hostname = scanDescriptor.hostname;
-    var parameters = scanDescriptor.parameters;
     
+    //TODO: We need the colours to be dependent on the type of scan. we also need the attributes to by dynamic asweel such as those with values "one", "two"
     //Building the card title structure
-    var cardTitle = document.createElement("dummy");
-    cardTitle.innerHTML = `<div class="card-header" id="headingOne", style="background-color:#563d7c"></div>`;
-    cardTitle = cardTitle.children[0];
+    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor}"></div>`);
     //Populating card title data
-    cardTitle.innerHTML = `<h2 class=\"mb-0\"></h2>`;
-    cardTitle.children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-decoration:none"></div>`;
-    cardTitle.children[0].children[0].innerText = `${scanname} on ${hostname} at ${timedate}`;
-
-
+    cardTitle.innerHTML = `<h2 class="mb-0"></h2>`;
+    cardTitle.children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light" type="button" data-toggle="collapse" data-target="#collapse${linkVal}" aria-expanded="true" aria-controls="collapse${linkVal}" style="text-decoration:none"></div>`;
+    cardTitle.children[0].children[0].innerText = `${scanDescriptor.scanname} on ${scanDescriptor.hostname} at ${scanDescriptor.timedate}`;
 
     //Building the card title description structure
-    var scanDescription = document.createElement("dummy");
-    scanDescription.innerHTML = `<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion"><div class="card-body"></div></div>`;
-    scanDescription = scanDescription.children[0]; //The above three lines is to create the above parent
-
+    var scanDescription = html2element(`<div id="collapse${linkVal}" class="collapse" aria-labelledby="heading${linkVal}" data-parent="#accordion"><div class="card-body"></div></div>`)
     scanDescription.innerHTML =`<div class="card-body"></div>`;
-
-
-
+    var parameters = scanDescriptor.parameters;
     //Populating title description data
-    if (parameters.length > 0){
-        scanDescription.children[0].innerHTML = `<h5>Scan Parameters</h5> <b>${parameters.join("</b><b>")}</b> </h5>\n<hr>`;    
+    if (Object.keys(parameters).length > 0){
+        scanDescription.children[0].innerHTML = `<h5>Scan Parameters</h5> <b>${parameters.join("</b><b>")}</b> </h5>`;    
     } else {
-        scanDescription.children[0].innerHTML = `<h5>Scan Parameters</h5> <b>Default/None</b> </h5>\n<hr>`;
+        scanDescription.children[0].innerHTML = `<h5>Scan Parameters</h5> <b>Default/None</b> </h5>`;
     }
 
     //Once the two have been built we need merge them
-    var card = document.createElement("div")
-    card.classList.add("card");
+    var card = html2element(`<div class="card"></div>`);
     card.appendChild(cardTitle);
     card.appendChild(scanDescription);
 
-
     //It's important to note that the title descriptor is actually a body to the header section
-
     return card;
 }
 
@@ -489,45 +500,15 @@ function createReportCardBody(scanResults){
 
 
 
-//TODO: Finish this function
-function createFinishedReport(){
-    return null;
-}
-
-function toggleAccordionVisibility(eventTarget){
-    return null;
-}
-
-function toggleComponent(eventTarget){
-    //We currenlty have the header, so we want to find it's body
-    console.log(eventTarget);
-    console.log(eventTarget.parentElement.parentElement.nextElementSibling);
-    var cardBody = eventTarget.parentElement.parentElement.nextElementSibling;
-    $('#' + cardBody.id).collapse("toggle");
-
-}
 
 
 
+// Responsive methods
 
 
-
-// Form item methods //
-
-
-
-
-
-
-
-
-//They all start as false 
-//This assumes that when they click it
+//This assumes that all the radio's are false to begin with
 function setRadioStatus(element){
     element.value = "true";
-    console.log(element);
-    console.log(element.id);
-    console.log(element.name);
     var elements = document.getElementsByName(element.name);
     for (var i = 0; i< elements.length; i++){
         if(elements[i].value == "true" && elements[i] != element) {
@@ -545,3 +526,31 @@ function setCheckboxStatus(element){
     }
 }
 
+function toggleComponent(eventTarget){
+    //We currenlty have the header, so we want to find it's body
+    var cardBody = eventTarget.parentElement.parentElement.nextElementSibling;
+    $('#' + cardBody.id).collapse("toggle"); //Using jquery methods provided by bs4
+}
+
+
+
+
+
+
+
+// Helper functions
+
+function appendInnerHTML(element, newInnerHTML){
+    var originalInnerHTML = element.innerHTML;
+    element.innerHTML = originalInnerHTML + newInnerHTML;
+}
+
+function html2element(htmlContent){
+    var card = document.createElement("dummy");
+    card.innerHTML = htmlContent;
+    return card.children[0];
+}
+
+const isObject = (obj) => {
+    return Object.prototype.toString.call(obj) === '[object Object]';
+};

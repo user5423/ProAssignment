@@ -243,14 +243,16 @@ function nsubmitScanForm(){
         if (!(response.ok || response.redirected)){
             throw Error(response.status);
         }
-        document.getElementById("submitScanForm");
+
+        var submit = document.getElementById("submitScanForm");
+        submit.parentNode.replaceChild(html2element(`<div id="submitScanForm" class="btn btn-success">Submitted!</div>`), submit);
         return response;
     }).catch(error => {
         processFetchError(error);
     });
     
     //Here we will want to reset the page
-
+    setTimeout(updateDomByGetRequest, 3000, currentLoadedPage, `/${currentLoadedPage}`);
 
 
 
@@ -287,8 +289,6 @@ function insertMessage(node, message){
 
 
 
-
-
 function isValidHostname(formSearch){
     if (formSearch.value != ""){
         addSuccessMessage(formSearch, `Correct hostname`);
@@ -296,7 +296,6 @@ function isValidHostname(formSearch){
     }
     addErrorMessage(formSearch, `Please enter a valid hostname!`)
     return false;
-
 }
 
 function addSuccessMessage(formSearch, message){
@@ -307,53 +306,6 @@ function addErrorMessage(formSearch, message){
     insertMessage(formSearch.parentElement, `<div class="feedback val-error">${message}<div>`);
 }
 
-
-
-
-
-
-//TODO: We need to implement both server side and client side implementation
-function submitScanForm(){
-    var input, label, item, hostInput, formCheckCollection, i;
-    var formJson = {};
-
-    //Every scan has a host input, so we can hardcode this in
-    hostInput = document.getElementById("inputHost").value;
-    formJson["host"] = hostInput;
-
-    //This gets the active checkboxes and radioboxes
-    formCheckCollection = document.getElementsByClassName("form-check");
-    for(i = 0; i < formCheckCollection.length; i++){
-        item = formCheckCollection[i];
-        input = item.children[0];
-        label = item.children[1];
-
-        if (item.classList.contains("form-check") == true){
-            if (input.value == "true"){
-                formJson[label.getElementsByTagName("b")[0].innerText] = input.value;
-            }
-        } else {
-            formJson[label.innerText] = input.value;
-        }
-        formJson.scanType = currentLoadedPage;
-    }
-
-    console.log(JSON.stringify(formJson));
- 
-    fetch(`http://127.0.0.1:4444/${currentLoadedPage}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json',},
-        body: JSON.stringify(formJson),
-    }).then(response => {
-        if (!(response.ok || response.redirected)){
-            throw Error(response.status);
-        }
-        return response;
-    }).catch(error => {
-        processFetchError(error);
-    });
-
-}
 
 function createScanPage(body){
     var htmlBio, htmlForm, bodyContainer;
@@ -407,16 +359,6 @@ function createForm(formMethods){
     appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary">Submit</div>`)
     return formElement.outerHTML;
 }
-
-
-
-
-
-
-
-
-// Form Validation //           TODO: This section needs to be finished
-
 
 
 

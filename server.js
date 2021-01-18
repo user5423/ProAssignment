@@ -4,6 +4,7 @@ var express = require('express');
 var fs = require("fs");
 const nmap = require('node-nmap');
 const dns = require('dns');
+const { nextTick } = require('process');
 // const util = require('util')
 // const { report } = require('process');
 
@@ -65,20 +66,26 @@ app.get("/networkScanner", (req, resp) => {
 })
 
 app.post("/networkScanner", (req, resp) => {
-    var formKeys = Object.keys(req.body);
-    var hostname = req.body["host"];
-    var params = [];
-
-    for(var i = 0; i < formKeys.length; i++){
-        var paramSwitch = formKeys[i];
-        if (paramSwitch != "host" && paramSwitch != "scanType"){
-            params.push(paramSwitch);
-        }
+    try {
+        var hostname, params;
+        params = processParameters(req);
+        hostname = req.body["host"];
+        resp.status(200);
+        resp.send();
+        console.log(hostname);
+        console.log(params);
+        executeNmapScan(hostname, params);
     }
-    executeNmapScan(hostname, params);
+    catch(err){
+        console.log("error nmap");
+        if (err == "incorrect_request"){
+            resp.status(400);
+        } else{
+            resp.status(501);
+        }
+        resp.send(); 
+    }
 
-    resp.send();
-    return null;
 })
 
 
@@ -107,33 +114,67 @@ app.get("/dnsScanner", (req, resp) => {
                                                 }
                                             }
     };
+    resp.type('json');
     resp.json(dnsMethods).send();
 })
 
 
 app.post("/dnsScanner", (req, resp) => {
-    //Here we will grab the formKeys
-    var formKeys = Object.keys(req.body);
-    var hostname = req.body["host"];
-    var params = [];
+    var hostname, params;
+    try {
+        hostname, params = processParameters(req);
+        resp.status(200);
+    }
+    catch(err){
+        if (err == "incorrect_request"){
+            resp.status(400);
+        } else{
+            resp.status(500);
+        }
+    }
 
+    resp.send();
+    executeDnsScan(hostname, params)
+
+})
+
+
+function processParameters(req){
+    var hostname = req.body["host"];
+    var scanType = req.body["scanType"];
+
+    if (hostname == undefined || scanType == undefined || !isValidHostname(hostname) || !isSupportedScanType(scanType)){
+        throw Error("incorrect_request");
+    } 
+    
+    var formKeys = Object.keys(req.body);
+    var params = [];
     for(var i = 0; i < formKeys.length; i++){
         var paramSwitch = formKeys[i];
         if (paramSwitch != "host" && paramSwitch != "scanType"){
             params.push(paramSwitch);
         }
     }
-    executeDnsScan(hostname, params)
-
-    resp.send();
-    //We will then iterate and perfrom
-    return null;
-})
+    return hostname, params;
+}
 
 
+function isSupportedScanType(scanType){
+    var supportedScanTypes = ["dnsscan", "nmapscan", "networkScanner"];
+    if (supportedScanTypes.includes(scanType)){
+        return true;
+    }
+    return false;
+}
 
-
-
+//TODO: Make this function more extensive
+function isValidHostname(hostname){
+    //In order to be a valid IP address or domain we need at least one period
+    if (hostname.includes(".")){
+        return true;
+    }
+    return false;
+}
 
 
 
@@ -148,16 +189,16 @@ app.post("/dnsScanner", (req, resp) => {
 
 //TODO: change from array to dictionary as there may be issues if multiple users were using this and the position shifted
 function executeNmapScan(hostname, params){
-    nmap.nmapLocation = "nmap"; //default
+    nmap.nmapLocation = "./Nmap/nmap.exe"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
 
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
-
     nmapscan.on('complete', data => {
-        transferResultsToFinished(reportObject, data);
+        transferResultsToFinished(reportObject, data[0]);
         console.log(finishedScans);
     }).on('error', data => {
-        transferResultsToFinished(reportObject, data);
+        // TODO: Change to deletion
+        transferResultsToFinished(reportObject, data[0]);
     });
 
     nmapscan.startScan();
@@ -171,10 +212,10 @@ async function executeDnsScan(hostname, params){
     var promises = [];
     var promise, param;
     var results = {};
-    
+
+
     for(var i = 0; i < params.length; i++) {
         param = params[i];
-
         promise = dns.promises.resolve(hostname, param).then((result) => {
             if (result != undefined){
                 return result;
@@ -184,17 +225,20 @@ async function executeDnsScan(hostname, params){
         }).catch(error => {return "Scan was unable to complete successfully";});
 
         promises.push(promise);
-        
     }
 
+    try {
     //We are executing multiple scans here, so we need to synchronize the async operations
-    for(var j = 0; j < promises.length; j++){
-        let result = await promises[j];
-        results[params[j]] = result;
+        for(var j = 0; j < promises.length; j++){
+            let result = await promises[j];
+            results[params[j]] = result;
+        }
+    } catch(error){
+        console.log(error);
+        //TODO: Add deletion here from running list
     }
     
     transferResultsToFinished(arrayPosition, results);
-
     return null;
 }
 
@@ -225,7 +269,7 @@ function logScanAsRunning(scanname, hostname, params){
     var runningScanReport = {"scanname": scanname,
                              "timedate": new Date(),
                              "hostname" :hostname,
-                             "paramaters":[params]};
+                             "parameters":[params]};
 
     runningScans.push(runningScanReport);
                                 

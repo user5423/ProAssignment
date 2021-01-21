@@ -33,6 +33,15 @@ html body {
   padding-bottom: 30px;
   height:100%;
 }
+
+.val-error {
+  color: red;
+}
+
+.val-success {
+  color: green;
+}
+
 /* 
 body {
   background: rgba(148, 7, 32, 1.0);

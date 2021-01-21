@@ -112,6 +112,9 @@ function checkDomEvents(eventTarget){
 
 
 function updateDomByGetRequest(eventTargetID, resourcePath){
+    // if (currentLoadedPage != eventTargetID){
+    //     return false;
+    // }
     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
 
     fetch(resourcePath)
@@ -146,7 +149,7 @@ function processFetchError(error){
     console.log(error);
     if (isNaN(error)){
         // document.getElementById("body").innerHTML = `<h4>There was a networking issue that caused the request to fail. This could have been anything from a disconnect to failed DNS lookup</h4>`;
-        document.getElementById("body").innerHTML = `<h4>We detected a ${error} code</h4>`;
+        document.getElementById("body").innerHTML = `<h4>We detected a networking error of some sort - this could be anything from the server being down to a unresolved DNS request</h4>`;
     }
     else {
         if (error[0] == "4"){
@@ -215,9 +218,11 @@ function nsubmitScanForm(){
                 input = item.children[0];
                 label = item.children[1];
 
-
-                if (item.classList.contains("form-check") == true){
-                        formJson[label.getElementsByTagName("b")[0].innerText] = input.value;
+                console.log(input.value);
+                if ((item.classList.contains("form-check") == true)){
+                        if (input.value == "true"){
+                            formJson[label.getElementsByTagName("b")[0].innerText] = input.value;
+                        }
                     }
                     else {
                         isValid = false;
@@ -232,7 +237,7 @@ function nsubmitScanForm(){
 
 
     formJson.scanType = currentLoadedPage;
-
+    console.log("yo");
     console.log(JSON.stringify(formJson));
 
     fetch(`http://127.0.0.1:4444/${currentLoadedPage}`, {
@@ -252,7 +257,7 @@ function nsubmitScanForm(){
     });
     
     //Here we will want to reset the page
-    setTimeout(updateDomByGetRequest, 3000, currentLoadedPage, `/${currentLoadedPage}`);
+    setTimeout(updateDomByGetRequest, 1000, currentLoadedPage, `/${currentLoadedPage}`);
 
 
 
@@ -374,7 +379,7 @@ function createRunningReportPage(body){
     document.getElementById("body").innerHTML = "";
     pageHeader = `<h3>Running Scans</h3><br>`;
     appendInnerHTML(document.getElementById("body"), pageHeader);
-
+    console.log(body);
     // In case there are no scans, we return an error message
     if (body.length == 0){
         message = `<p> There are no currently running scans detected. To populate this page, you need to initiate a scan.</p><p>We are attempting to detect new submitted scan requests. Are you expecting a scan to be here? It's
@@ -558,7 +563,6 @@ function createReportCardHeader(scanDescriptor){
 
 // Responsive Component methods
 
-
 //This assumes that all the radio's are false to begin with
 function setRadioStatus(element){
     var elements, i;
@@ -584,11 +588,6 @@ function toggleComponent(eventTarget){
     var cardBody = eventTarget.parentElement.parentElement.nextElementSibling;
     $('#' + cardBody.id).collapse("toggle"); //Using jquery methods provided by bs4
 }
-
-
-
-
-
 
 
 // Helper dom functions

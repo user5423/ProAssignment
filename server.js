@@ -24,9 +24,17 @@ var finishedScans = getPersistentReports();
 
 app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
 
-app.get("/runningScans", (req, resp) => resp.json(runningScans).send())
+app.get("/runningScans", (req, resp) => {
+    resp.type = "json";
+    resp.status = 200;
+    resp.json(runningScans).send();
+})
 
-app.get("/finishedScans", (req, resp) => resp.json(finishedScans).send())
+app.get("/finishedScans", (req, resp) => {
+    resp.type = "json";
+    resp.status = 200;
+    resp.json(finishedScans).send();
+})
 
 app.get("/networkScanner", (req, resp) => {
     const nmapMethods = {"PageStart" : `<h3>Network Scanner</h3>
@@ -35,12 +43,14 @@ app.get("/networkScanner", (req, resp) => {
                                         <div class="form-group ">
                                             <label for="inputHost">Host (IP address / Hostname):</label>
                                             <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
-                                            <small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>
+                                            <div class="valid-feedback">Looks good!</div>
+                                            <!--<small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>-->
                                         </div><br>`,
                                         
                             
                          "FormMethods": {"Scan Technqiues" : {
                                                     "type" : "checkbox",
+                                                    "required": "required",
                                                     "formItems" : ["<b>-sT</b> : TCP Connect Scan",
                                                                     "<b>-sS</b> : TCP SYN Scan",
                                                                     "<b>-sU</b> : UDP Connect Scan"]
@@ -48,12 +58,14 @@ app.get("/networkScanner", (req, resp) => {
 
                                         "Port Range": {
                                                     "type" : "radio",
+                                                    "required": "required",
                                                     "formItems": ["<b>-p1-1000</b> : Default Range (1-1000)",
                                                                 "<b>-p-</b> : Full Range (1-65535)"]
                                                 },
 
                                         "Additional Scan Technqiues": {
                                                     "type" :"checkbox",
+                                                    "required": "optional",
                                                     "formItems" :["<b>-sV</b> : Service/Version Detection",
                                                                 "<b>-sC</b> : Default Nmap Scripts"]      
 
@@ -61,6 +73,8 @@ app.get("/networkScanner", (req, resp) => {
                                             }
                         
     };
+    resp.type = "json";
+    resp.status = 200;
     resp.json(nmapMethods).send();
 // We need to decide how we are going to create the form
 })
@@ -70,21 +84,21 @@ app.post("/networkScanner", (req, resp) => {
         var hostname, params;
         params = processParameters(req);
         hostname = req.body["host"];
-        resp.status(200);
-        resp.send();
-        console.log(hostname);
-        console.log(params);
-        executeNmapScan(hostname, params);
+        resp.json({"status": 200}).send(); 
     }
     catch(err){
         console.log("error nmap");
-        if (err == "incorrect_request"){
-            resp.status(400);
-        } else{
-            resp.status(501);
-        }
-        resp.send(); 
+        // if (err == "incorrect_request"){
+        //     resp.status(400);
+        // } else{
+        //     resp.status(500);
+        // }
+        resp.status(400);
+        resp.json({"status": "error"}).send(); 
+        return;
     }
+    
+    executeNmapScan(hostname, params);
 
 })
 
@@ -102,7 +116,7 @@ app.get("/dnsScanner", (req, resp) => {
                             
                          "FormMethods": {"Record Types" : {
                                                     "type" : "checkbox",
-                                                    
+                                                    "required": "required",
                                                     "formItems" : ["<b>A</b> : IPv4 Address",
                                                                     "<b>AAAA</b> : IPv6 Address",
                                                                     "<b>CNAME</b> : Canonical Name Records",
@@ -115,35 +129,52 @@ app.get("/dnsScanner", (req, resp) => {
                                             }
     };
     resp.type('json');
+    resp.status(200);
     resp.json(dnsMethods).send();
 })
 
 
 app.post("/dnsScanner", (req, resp) => {
-    var hostname, params;
     try {
-        hostname, params = processParameters(req);
+        var hostname, params;
+        params = processParameters(req);
+        hostname = req.body["host"];
         resp.status(200);
+        resp.send();
     }
     catch(err){
+        console.log("error dns");
         if (err == "incorrect_request"){
             resp.status(400);
         } else{
-            resp.status(500);
+            resp.status(501);
         }
+        resp.send(); 
+        return
     }
-
-    resp.send();
-    executeDnsScan(hostname, params)
-
+    
+    executeDnsScan(hostname, params);
 })
 
 
+
+
+
+
+
+
+
+
+
+
+
 function processParameters(req){
+    // console.log(req.body);
     var hostname = req.body["host"];
     var scanType = req.body["scanType"];
 
     if (hostname == undefined || scanType == undefined || !isValidHostname(hostname) || !isSupportedScanType(scanType)){
+        // return;
         throw Error("incorrect_request");
     } 
     
@@ -160,7 +191,7 @@ function processParameters(req){
 
 
 function isSupportedScanType(scanType){
-    var supportedScanTypes = ["dnsscan", "nmapscan", "networkScanner"];
+    var supportedScanTypes = ["dnsscan", "dnsScanner", "nmapscan", "networkScanner"];
     if (supportedScanTypes.includes(scanType)){
         return true;
     }
@@ -191,11 +222,14 @@ function isValidHostname(hostname){
 function executeNmapScan(hostname, params){
     nmap.nmapLocation = "./Nmap/nmap.exe"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
+    // console.log("executing nmap scan");
+    // console.log(params);
 
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
     nmapscan.on('complete', data => {
+        // console.log(data);
         transferResultsToFinished(reportObject, data[0]);
-        console.log(finishedScans);
+        // console.log(finishedScans);
     }).on('error', data => {
         // TODO: Change to deletion
         transferResultsToFinished(reportObject, data[0]);
@@ -227,16 +261,14 @@ async function executeDnsScan(hostname, params){
         promises.push(promise);
     }
 
-    try {
+    
     //We are executing multiple scans here, so we need to synchronize the async operations
-        for(var j = 0; j < promises.length; j++){
-            let result = await promises[j];
-            results[params[j]] = result;
-        }
-    } catch(error){
-        console.log(error);
-        //TODO: Add deletion here from running list
+    for(var j = 0; j < promises.length; j++){
+        let result = await promises[j];
+        results[params[j]] = result;
     }
+
+        //TODO: Add deletion here from running list
     
     transferResultsToFinished(arrayPosition, results);
     return null;
@@ -272,7 +304,6 @@ function logScanAsRunning(scanname, hostname, params){
                              "parameters":[params]};
 
     runningScans.push(runningScanReport);
-                                
     return runningScanReport;
 }
 
@@ -318,13 +349,13 @@ function writeScanResultsToFile(scanResults){
 
 
 
+module.exports = app;
 
 
 
-
-app.listen(4444, () => {
-    console.log(`Example app listening at http://127.0.0.1:${4444}`)
-  })
+// app.listen(4444, () => {
+//     console.log(`Example app listening at http://127.0.0.1:${4444}`)
+//   })
 
 
 

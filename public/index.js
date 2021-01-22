@@ -386,38 +386,29 @@ function deleteReport(element){
     //Client-side
     //The element is the trash can, so we need to find the card -- it is two parents up
     var cardHeader = element.parentElement;
-    console.log(cardHeader);
 
     if (element.tagName == "I"){
         cardHeader = cardHeader.parentElement;
-        console.log(cardHeader);
-        console.log(23);
     }
     //Then we find out which place it is in the list locally -- we can tell by the header
     var cardPosition = cardHeader.id.slice(-1);
     console.log(cardPosition);
-
     
     //Cleaning up empty accordion
     deletedScans += 1
     if (deletedScans == finishedScans.length){
         document.getElementById("accordion").outerHTML = "";
-
     }
 
     //We also delete it from the DOM with a fade out animation
     cardHeader.parentElement.outerHTML = "";
-    console.log(finishedScans[0]);
 
 
-    
     //Server-side preparation
 
     //we then send the scan descriptor of the report that we want to delete
     var scanDescriptor;
 
-    console.log(finishedScans);
-    console.log(finishedScans[cardPosition]);
     scanDescriptor = finishedScans[cardPosition]["scan descriptor"];
 
     console.log(scanDescriptor);

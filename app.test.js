@@ -1,7 +1,7 @@
 const request =  require('supertest');
 const app = require('./server');
 const { TestScheduler } = require('jest');
-
+const process = require('process');
 
 app.listen(4444, () => {
     console.log(`Example app listening at http://127.0.0.1:${4444}`)
@@ -115,8 +115,8 @@ describe('Testing the /runningScans endpoint', () => {
 
 //Any errors created during the actual execution of the scans is put in the reports
 
-describe('Testing the /networkScanner endpoint', () => {
-    test("POST /networkScanner - bare minimum body parameters", () => {
+describe('Testing the /networkScanner + /dnsScanner endpoint', () => {
+    test("POST /networkScanner + /dnsScanner - bare minimum body parameters", () => {
         return request(app)
         .post('/networkScanner')
         .send({
@@ -126,7 +126,7 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect(200);
     });
 
-    test("POST /networkScanner - url parameters that don't exist", () => {
+    test("POST /networkScanner + /dnsScanner - url parameters that don't exist", () => {
         return request(app)
         .post('/networkScanner?q=123')
         .send({
@@ -136,7 +136,7 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect(200);
 });
 
-    test("POST /networkScanner - content-type response is JSON", () => {
+    test("POST /networkScanner + /dnsScanner - content-type response is JSON", () => {
         return request(app)
         .post('/networkScanner')
         .send({
@@ -146,7 +146,7 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect('Content-type', /json/);
     });
 
-    test("POST /networkScanner - incorrect scantype", () => {
+    test("POST /networkScanner + /dnsScanner - incorrect scantype", () => {
         return request(app)
         .post('/networkScanner')
         .send({
@@ -156,7 +156,7 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect(400);
     });
 
-    test("POST /networkScanner - incorrect host", () => {
+    test("POST /networkScanner + /dnsScanner - incorrect host", () => {
         return request(app)
         .post('/networkScanner')
         .send({
@@ -166,7 +166,7 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect(400);
     });
 
-    test("POST /networkScanner - incorrect host and scantype", () => {
+    test("POST /networkScanner + /dnsScanner - incorrect host and scantype", () => {
         return request(app)
         .post('/networkScanner')
         .send({
@@ -176,23 +176,42 @@ describe('Testing the /networkScanner endpoint', () => {
         .expect(400);
     });
 
-    test("POST /networkScanner - correct host and scantype + correct method requests", () => {
+    //The reason why we allow "incorrect methods" as 200 is because the nmap node wrapper is basic and only supports a limited
+    //number of flags/switches. However, as it updates, what once was considered incorrect will be allowed by the wrapper
+    //Furthermore we deal with these errors quietly by disregarding them on the server.js
+    test("POST /networkScanner + /dnsScanner - correct host and scantype + incorrect methods", () => {
         return request(app)
         .post('/networkScanner')
         .send({
             "host": "google.com",
             "scanType": "dnsscan",
-            "sT" : []
+            "sT" : true,
+            "sR": true, 
         })
         .expect(200);
     });
 
+    test("POST /networkScanner + /dnsScanner - correct host and scantype + correct methods", () => {
+        return request(app)
+        .post(' ')
+        .send({
+            "host": "google.com",
+            "scanType": "dnsscan",
+            "sT" : true,
+            "sV": true, 
+        })
+        .expect(200);
+    });
+
+
+
     
 })
 
-// "scanType" :"dnsscan"
+// // "scanType" :"dnsscan"
 
-
+// console.log("Ignore the below. We are testing the endpoints, but our code also sets of async operations that can take many minutes\
+//             We aren't testing the endpoint, not the scan execution, so you can just exit early by entering 'CTRL+C'");
 
 
 

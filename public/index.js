@@ -27,6 +27,8 @@ var currentLoadedPage = "index";
 
 var componentLinkVals = 0;
 
+var runningScans = {};
+var finishedScans = {};
 
 
 // Event listeners
@@ -38,16 +40,19 @@ window.addEventListener("click", event => {
     eventTarget = event.target;
     // We need to define how the definitions below will work
     eventTargetID = eventTarget.id;
+    try {
+        if ((resourcePath = eventToGetRequest[eventTargetID]) != undefined) {
+            updateDomByGetRequest(eventTargetID, resourcePath);
+            currentLoadedPage = eventTargetID;
+        } else if ((resourcePath = eventToPostRequest[eventTargetID]) != undefined) {
+            nsubmitScanForm(currentLoadedPage);
+        } else {
+            checkDomEvents(eventTarget);
+            console.log("This event id isn't registered");
+        }
+    } catch(err) {}
 
-    if ((resourcePath = eventToGetRequest[eventTargetID]) != undefined) {
-        updateDomByGetRequest(eventTargetID, resourcePath);
-        currentLoadedPage = eventTargetID;
-    } else if ((resourcePath = eventToPostRequest[eventTargetID]) != undefined) {
-        nsubmitScanForm(currentLoadedPage);
-    } else {
-        checkDomEvents(eventTarget);
-        console.log("This event id isn't registered");
-    }
+
     return null;
 })
 
@@ -94,6 +99,7 @@ function htmlParse(response){ return response.text();}
 
 
 function checkDomEvents(eventTarget){
+    console.log(eventTarget);
     var key, value;
     for(key in domEventDefinitions){
         for (value in domEventDefinitions[key]){
@@ -312,9 +318,10 @@ function addErrorMessage(formSearch, message){
 }
 
 
+
 function createScanPage(body){
     var htmlBio, htmlForm, bodyContainer;
-    // TODO fomalize howe we add html together
+
     htmlBio = createBio(body["PageStart"]);
     htmlForm = createForm(body["FormMethods"]);
     bodyContainer = html2element(`<div class="row"></div>`)
@@ -368,13 +375,48 @@ function createForm(formMethods){
 
 
 
+function addDeleteReportEventListener(){
+    // var collection = document.getElementsByClassName("delete-button")
+    // for (var i =0; i< collection.length; i++){
+    //     var element = collection[i];
+    //     element.addEventListener("click", deleteReport(this))    }
+    return
+}
+
+
 // Report Methods //            TODO: This section needs ot be finished
+
+
+//First we click the trash button
+function deleteReport(element){
+    //Client-side
+
+    //The element is the trash can, so we need to find the card
+
+    //Then we find out which place it is in the list locally
+
+    //We pop that from the list and leave a tombstone
+
+    //We also delete it from the DOM with a fade out animation
+
+
+    //Server-side preparation
+
+
+    //we then send the scan descriptor of the report that we want to delete
+
+    //Then the server needs to handle it from there
+    return
+}
+
+
 
 
 
 
 //TODO: Finish or remove a functional search bar
 function createRunningReportPage(body){
+    runningScans = body;
     var pageHeader, message, spinner, accordion, i;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
@@ -402,6 +444,7 @@ function createRunningReportPage(body){
 
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
+    finishedScans = body;
     var runningReport, finishedReport, message, pageHeader, accordion, i;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
@@ -432,6 +475,11 @@ function createFinishedReportPage(body){
 
 //This should have a scan results and scan descriptor on body
 function completeRunningReport(runningReport, body){
+    //the runningReport element is the card element
+
+    addButtonsToCard(runningReport);
+
+    console.log(runningReport);
     if (body["scan descriptor"].scanname == "dnsscan"){
         return createScanReport(runningReport, body);
     } else if (body["scan descriptor"].scanname == "nmapscan"){
@@ -439,6 +487,21 @@ function completeRunningReport(runningReport, body){
     } else {
         console.log("Incorrect report created");
     }
+
+
+}
+
+
+function addButtonsToCard(runningReport){
+    var deleteButton = `<div type="button" class="btn btn-danger btn-lg" style="float:right">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </div>`;
+
+    deleteButton = html2element(deleteButton);
+    runningReport.children[0].appendChild(deleteButton);
+
+    // runningReport.children[0].c
+    // runningReport.children[0].children[-1].addEventListener("click", deleteReport(this))
 }
 
 //Adds a scan report to a original pre-existing running report card
@@ -530,11 +593,21 @@ function createReportCardHeader(scanDescriptor){
     linkVal = String(componentLinkVals++);
 
     //Building the card title structure
-    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor}"></div>`);
+    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor} ;padding:0px"></div>`);
     //Populating card title data
-    cardTitle.innerHTML = `<h2 class="mb-0"></h2>`;
-    cardTitle.children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light" type="button" data-toggle="collapse" data-target="#collapse${linkVal}" aria-expanded="true" aria-controls="collapse${linkVal}" style="text-decoration:none"></div>`;
-    cardTitle.children[0].children[0].innerText = `${scanDescriptor.scanname} on ${scanDescriptor.hostname} at ${scanDescriptor.timedate}`;
+    cardTitle.innerHTML = `<div style="display:inline"></div>`;
+    cardTitle.children[0].innerHTML = `<h2 style="display:inline" class="mb-0"></h2`;
+    cardTitle.children[0].children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light" type="button" data-toggle="collapse" data-target="#collapse${linkVal}" aria-expanded="true" aria-controls="collapse${linkVal}" style="text-decoration:none"></div>`;
+    
+    var spanTitle = html2element(`<span class="d-none d-sm-block" data-toggle="collapse" data-target="#collapse${linkVal}"> ${scanDescriptor.scanname} on ${scanDescriptor.hostname} at ${scanDescriptor.timedate}</span>`);
+    var spanShortTitle = html2element(`<span class="d-block d-sm-none" data-toggle="collapse" data-target="#collapse${linkVal}"> ${scanDescriptor.scanname} on ${scanDescriptor.hostname}</span>`);
+
+    cardTitle.children[0].children[0].children[0].appendChild(spanTitle);
+    cardTitle.children[0].children[0].children[0].appendChild(spanShortTitle);
+
+
+
+    // class = "d-none d-sm-block"
 
     //Building the card title description structure
     var scanDescription = html2element(`<div id="collapse${linkVal}" class="collapse" aria-labelledby="heading${linkVal}" data-parent="#accordion"><div class="card-body"></div></div>`)
@@ -585,9 +658,11 @@ function setCheckboxStatus(element){
 }
 
 function toggleComponent(eventTarget){
-    //We currenlty have the header, so we want to find it's body
-    var cardBody = eventTarget.parentElement.parentElement.nextElementSibling;
+    var dataTargetValue = eventTarget.getAttribute("data-target");
+    dataTargetValue = dataTargetValue.slice(1);
+    var cardBody = document.getElementById(dataTargetValue);
     $('#' + cardBody.id).collapse("toggle"); //Using jquery methods provided by bs4
+
 }
 
 

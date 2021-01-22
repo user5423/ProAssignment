@@ -348,10 +348,10 @@ function createForm(formMethods){
         formGroup = html2element(`<div class="form-group ${isRequired}"><p><b>${section}</b></p></div>`);
 
         // With item type we can decide checkbox
-
+        // No need to provide aria, as the default input and label elements already have semantics that we dont need to overwrite with aria attributes
         for (i = 0; i < formMethods[section]["formItems"].length; i++){
             item = formMethods[section]["formItems"][i];
-            formItemHTML = `<div class="form-check"><input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${++sectionCounter}" >
+            formItemHTML = `<div class="form-check"><input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${++sectionCounter}">
                             <label class="form-check-label" for="defaultCheck${++itemCounter}">${item}</label></div>`;
             appendInnerHTML(formGroup, formItemHTML);
         }
@@ -360,8 +360,9 @@ function createForm(formMethods){
         appendInnerHTML(formElement, "<br>")
     }
 
+    //We do need aria for this div though
     // Replaced button with div in order to fix behaviour bug that was caused by bs4's javascript code
-    appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary">Submit</div>`)
+    appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary" role="submitform" aria-label="Click to submit the form">Submit</div>`)
     return formElement.outerHTML;
 }
 
@@ -469,7 +470,7 @@ function createScanReport(runningReport, scanObject){
     }
 
     //Now that we have created the table with populated values, we need to merge it with the original running report
-    appendInnerHTML(runningReport.children[1].children[0], `<hr><h5>Scan Results</h5>${table.outerHTML}`);
+    appendInnerHTML(runningReport.children[1].children[0], `<hr><h5>Scan Results</h5><div class="table-responsive-md">${table.outerHTML}</div>`);
     return runningReport;
 }
 

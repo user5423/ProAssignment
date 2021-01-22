@@ -38,15 +38,11 @@ app.get("/finishedScans", (req, resp) => {
 
 
 app.post("/deleteReport", (req, resp) => {
-    console.log("yo");
-    console.log(finishedScans.length);
     console.log(Object(req.body));
-    // console.log(req.body);
     //So we need to have a valid object to search for
     try {
         for (var i =0; i < finishedScans.length; i++){
             if (JSON.stringify(finishedScans[i]["scan descriptor"]) == JSON.stringify(Object(req.body))){
-                console.log("yup");
                 finishedScans.splice(i, 1);
             }
         }
@@ -56,12 +52,7 @@ app.post("/deleteReport", (req, resp) => {
         resp.json({"status": 200}).send(); 
     }
     catch(err){
-        // console.log("error nmap");
-        // if (err == "incorrect_request"){
-        //     resp.status(400);
-        // } else{
-        //     resp.status(500);
-        // }
+
         resp.status(400);
         resp.json({"status": "error"}).send(); 
         return;

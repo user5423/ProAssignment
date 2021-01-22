@@ -388,11 +388,17 @@ function deleteReport(element){
     var cardHeader = element.parentElement;
     console.log(cardHeader);
 
+    if (element.tagName == "I"){
+        cardHeader = cardHeader.parentElement;
+        console.log(cardHeader);
+        console.log(23);
+    }
     //Then we find out which place it is in the list locally -- we can tell by the header
     var cardPosition = cardHeader.id.slice(-1);
     console.log(cardPosition);
+
     
-    //We pop that from the list and leave a tombstone
+    //Cleaning up empty accordion
     deletedScans += 1
     if (deletedScans == finishedScans.length){
         document.getElementById("accordion").outerHTML = "";
@@ -401,13 +407,35 @@ function deleteReport(element){
 
     //We also delete it from the DOM with a fade out animation
     cardHeader.parentElement.outerHTML = "";
+    console.log(finishedScans[0]);
 
+
+    
     //Server-side preparation
 
-
     //we then send the scan descriptor of the report that we want to delete
+    var scanDescriptor;
 
+    console.log(finishedScans);
+    console.log(finishedScans[cardPosition]);
+    scanDescriptor = finishedScans[cardPosition]["scan descriptor"];
+
+    console.log(scanDescriptor);
     //Then the server needs to handle it from there
+    
+    fetch(`http://127.0.0.1:4444/deleteReport`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify(scanDescriptor),
+    }).then(response => {
+        if (!(response.ok || response.redirected)){
+            throw Error(response.status);
+        }
+    }).catch(error => {
+        processFetchError(error);
+    });
+
+    console.log("deleted");
     return
 }
 

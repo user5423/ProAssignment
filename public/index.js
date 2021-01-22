@@ -1,6 +1,8 @@
 // Now that we have a base page to work with, we need to start building the base systems
 // We need to build a function that requests and updates content on the DOM
 
+// const { delete } = require("../server");
+
 //Setting global variables
 const eventToGetRequest = {"runningScans": "/runningScans",
                             "finishedScans": "/finishedScans",
@@ -20,7 +22,9 @@ const responseHandlingDefinitions = {"networkScanner": [jsonParse, createScanPag
 var domEventDefinitions = {"type": {"radio": setRadioStatus,
                                     "checkbox": setCheckboxStatus},
                            
-                            "data-toggle":{"collapse": toggleComponent}
+                            "data-toggle":{"collapse": toggleComponent},
+
+                            "class": {"delete-report": deleteReport}
                         };
 
 var currentLoadedPage = "index";
@@ -29,7 +33,7 @@ var componentLinkVals = 0;
 
 var runningScans = {};
 var finishedScans = {};
-
+var deletedScans = 0;
 
 // Event listeners
 
@@ -374,34 +378,29 @@ function createForm(formMethods){
 }
 
 
-
-function addDeleteReportEventListener(){
-    // var collection = document.getElementsByClassName("delete-button")
-    // for (var i =0; i< collection.length; i++){
-    //     var element = collection[i];
-    //     element.addEventListener("click", deleteReport(this))    }
-    return
-}
-
-
 // Report Methods //            TODO: This section needs ot be finished
 
 
 //First we click the trash button
 function deleteReport(element){
     //Client-side
-
     //The element is the trash can, so we need to find the card -- it is two parents up
-    var card = element.parentElement.parentElement;
+    var cardHeader = element.parentElement;
+    console.log(cardHeader);
 
     //Then we find out which place it is in the list locally -- we can tell by the header
-    card.
+    var cardPosition = cardHeader.id.slice(-1);
+    console.log(cardPosition);
     
-
     //We pop that from the list and leave a tombstone
+    deletedScans += 1
+    if (deletedScans == finishedScans.length){
+        document.getElementById("accordion").outerHTML = "";
+
+    }
 
     //We also delete it from the DOM with a fade out animation
-
+    cardHeader.parentElement.outerHTML = "";
 
     //Server-side preparation
 
@@ -449,6 +448,7 @@ function createRunningReportPage(body){
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
     linkVal = 0;
+    deletedScans = 0
     finishedScans = body;
     var runningReport, finishedReport, message, pageHeader, accordion, i;
     //Create default header for webpage
@@ -498,12 +498,13 @@ function completeRunningReport(runningReport, body){
 
 
 function addButtonsToCard(runningReport){
-    var deleteButton = `<div class="btn btn-danger btn-lg rounded-0" style="float:right; border-bottom:2px;">
-                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+    var deleteButton = `<div class="btn btn-danger btn-lg rounded-0 delete-report" role="delete-report" style="float:right; border-bottom:2px;">
+                            <i class="fa fa-trash-o delete-report" aria-hidden="true"></i>
                         </div>`;
 
     deleteButton = html2element(deleteButton);
     runningReport.children[0].appendChild(deleteButton);
+    // runningReport.children[0].lastChild.addEventListener("click", deleteReport(this));
 
     // runningReport.children[0].c
     // runningReport.children[0].children[-1].addEventListener("click", deleteReport(this))

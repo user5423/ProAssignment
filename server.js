@@ -36,6 +36,39 @@ app.get("/finishedScans", (req, resp) => {
     resp.json(finishedScans).send();
 })
 
+
+app.post("/deleteReport", (req, resp) => {
+    console.log("yo");
+    console.log(finishedScans.length);
+    console.log(Object(req.body));
+    // console.log(req.body);
+    //So we need to have a valid object to search for
+    try {
+        for (var i =0; i < finishedScans.length; i++){
+            if (JSON.stringify(finishedScans[i]["scan descriptor"]) == JSON.stringify(Object(req.body))){
+                console.log("yup");
+                finishedScans.splice(i, 1);
+            }
+        }
+        writeFinishedScansToFile();
+
+        console.log(finishedScans.length);
+        resp.json({"status": 200}).send(); 
+    }
+    catch(err){
+        // console.log("error nmap");
+        // if (err == "incorrect_request"){
+        //     resp.status(400);
+        // } else{
+        //     resp.status(500);
+        // }
+        resp.status(400);
+        resp.json({"status": "error"}).send(); 
+        return;
+    }
+})
+
+
 app.get("/networkScanner", (req, resp) => {
     const nmapMethods = {"PageStart" : `<h3>Network Scanner</h3>
                                         <p>There are numerous tools to help you with you're scan. Since this is a demo site, there isn't an extensive number of supported tools
@@ -87,7 +120,7 @@ app.post("/networkScanner", (req, resp) => {
         resp.json({"status": 200}).send(); 
     }
     catch(err){
-        console.log("error nmap");
+        // console.log("error nmap");
         // if (err == "incorrect_request"){
         //     resp.status(400);
         // } else{
@@ -346,6 +379,12 @@ function writeScanResultsToFile(scanResults){
 
 }
 
+function writeFinishedScansToFile(){
+    fs.writeFile("reports.json", JSON.stringify(finishedScans, null, 4), (err) =>{
+        if (err) {console.log(err);}})
+        
+}
+
 
 
 
@@ -353,9 +392,9 @@ module.exports = app;
 
 
 
-// app.listen(4444, () => {
-//     console.log(`Example app listening at http://127.0.0.1:${4444}`)
-//   })
+app.listen(4444, () => {
+    console.log(`Example app listening at http://127.0.0.1:${4444}`)
+  })
 
 
 

@@ -391,9 +391,12 @@ function addDeleteReportEventListener(){
 function deleteReport(element){
     //Client-side
 
-    //The element is the trash can, so we need to find the card
+    //The element is the trash can, so we need to find the card -- it is two parents up
+    var card = element.parentElement.parentElement;
 
-    //Then we find out which place it is in the list locally
+    //Then we find out which place it is in the list locally -- we can tell by the header
+    card.
+    
 
     //We pop that from the list and leave a tombstone
 
@@ -416,6 +419,7 @@ function deleteReport(element){
 
 //TODO: Finish or remove a functional search bar
 function createRunningReportPage(body){
+    componentLinkVals =0;
     runningScans = body;
     var pageHeader, message, spinner, accordion, i;
     //Create default header for webpage
@@ -444,6 +448,7 @@ function createRunningReportPage(body){
 
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
+    linkVal = 0;
     finishedScans = body;
     var runningReport, finishedReport, message, pageHeader, accordion, i;
     //Create default header for webpage
@@ -493,7 +498,7 @@ function completeRunningReport(runningReport, body){
 
 
 function addButtonsToCard(runningReport){
-    var deleteButton = `<div type="button" class="btn btn-danger btn-lg" style="float:right">
+    var deleteButton = `<div class="btn btn-danger btn-lg rounded-0" style="float:right; border-bottom:2px;">
                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                         </div>`;
 
@@ -573,7 +578,9 @@ function createNestedObjectTable(values){
 
 
 
-function createRunningReport(scanDescriptor){return createReportCardHeader(scanDescriptor);}
+function createRunningReport(scanDescriptor){
+    return createReportCardHeader(scanDescriptor);
+}
 
 
 //The card header has two components:
@@ -593,7 +600,7 @@ function createReportCardHeader(scanDescriptor){
     linkVal = String(componentLinkVals++);
 
     //Building the card title structure
-    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor} ;padding:0px"></div>`);
+    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor} ;padding:0px; border-width:0px;"></div>`);
     //Populating card title data
     cardTitle.innerHTML = `<div style="display:inline"></div>`;
     cardTitle.children[0].innerHTML = `<h2 style="display:inline" class="mb-0"></h2`;

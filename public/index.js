@@ -121,10 +121,61 @@ function checkDomEvents(eventTarget){
 }
 
 
+// function updateDomByGetRequest(eventTargetID, resourcePath){
+//     // if (currentLoadedPage != eventTargetID){
+//     //     return false;
+//     // }
+//     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
+
+//     while (true) {
+//         fetch(resourcePath)
+//         .then(response => {
+//             if (!(response.ok || response.redirected)){
+//                 throw Error(response.status);
+//             }
+//             return response;
+//         })
+//         .then(response => responseHandlingDefinitions[eventTargetID][0](response))
+//         .then(body => {
+//             responseHandlingDefinitions[eventTargetID][1](body);
+//         }).catch(error => {
+//             processFetchError(error);
+//         });
+
+//         //
+//         sleep(1000);
+//     }
+
+
+//     return null;
+// }
+
+
+
 function updateDomByGetRequest(eventTargetID, resourcePath){
-    // if (currentLoadedPage != eventTargetID){
-    //     return false;
-    // }
+    var returnVal = fetchGetRequest(eventTargetID, resourcePath)
+    if (returnVal == true){
+        return null;
+    }
+
+    var schedNextGet;
+    schedNextGet = function(){
+        setTimeout(function() {
+            var response = fetchGetRequest(eventTargetID, resourcePath);
+            console.log(response);
+            console.log("hmmm");
+            if (response == false){
+                schedNextGet()
+            }
+        }, 1000, eventTargetID, resourcePath);
+
+    }
+
+    console.log(schedNextGet())
+}
+
+function fetchGetRequest(eventTargetID, resourcePath){
+    var relResourcePath = resourcePath;
     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
 
     fetch(resourcePath)
@@ -139,11 +190,9 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
         responseHandlingDefinitions[eventTargetID][1](body);
     }).catch(error => {
         processFetchError(error);
+        updateDomByGetRequest(eventTargetID, relResourcePath);
+
     });
-
-
-
-    return null;
 }
 
 

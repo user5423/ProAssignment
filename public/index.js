@@ -121,59 +121,10 @@ function checkDomEvents(eventTarget){
 }
 
 
-// function updateDomByGetRequest(eventTargetID, resourcePath){
-//     // if (currentLoadedPage != eventTargetID){
-//     //     return false;
-//     // }
-//     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
-
-//     while (true) {
-//         fetch(resourcePath)
-//         .then(response => {
-//             if (!(response.ok || response.redirected)){
-//                 throw Error(response.status);
-//             }
-//             return response;
-//         })
-//         .then(response => responseHandlingDefinitions[eventTargetID][0](response))
-//         .then(body => {
-//             responseHandlingDefinitions[eventTargetID][1](body);
-//         }).catch(error => {
-//             processFetchError(error);
-//         });
-
-//         //
-//         sleep(1000);
-//     }
-
-
-//     return null;
-// }
-
-
-
 function updateDomByGetRequest(eventTargetID, resourcePath){
-    var returnVal = fetchGetRequest(eventTargetID, resourcePath)
-    if (returnVal == true){
-        return null;
-    }
-
-    var schedNextGet;
-    schedNextGet = function(){
-        setTimeout(function() {
-            var response = fetchGetRequest(eventTargetID, resourcePath);
-            if (response == false){
-                schedNextGet()
-            }
-        }, 1000, eventTargetID, resourcePath);
-
-    }
-
-    console.log(schedNextGet())
-}
-
-function fetchGetRequest(eventTargetID, resourcePath){
-    var relResourcePath = resourcePath;
+    // if (currentLoadedPage != eventTargetID){
+    //     return false;
+    // }
     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
 
     fetch(resourcePath)
@@ -188,10 +139,56 @@ function fetchGetRequest(eventTargetID, resourcePath){
         responseHandlingDefinitions[eventTargetID][1](body);
     }).catch(error => {
         processFetchError(error);
-        updateDomByGetRequest(eventTargetID, relResourcePath);
+    })
 
-    });
 }
+
+
+//     return null;
+// }
+
+
+
+// function updateDomByGetRequest(eventTargetID, resourcePath){
+//     var returnVal = fetchGetRequest(eventTargetID, resourcePath)
+//     if (returnVal == true){
+//         return null;
+//     }
+
+//     var schedNextGet;
+//     schedNextGet = function(){
+//         setTimeout(function() {
+//             var response = fetchGetRequest(eventTargetID, resourcePath);
+//             if (response == false){
+//                 schedNextGet()
+//             }
+//         }, 1000, eventTargetID, resourcePath);
+
+//     }
+
+//     console.log(schedNextGet())
+// }
+
+// function fetchGetRequest(eventTargetID, resourcePath){
+//     var relResourcePath = resourcePath;
+//     resourcePath = `http://127.0.0.1:4444${resourcePath}`;
+
+//     fetch(resourcePath)
+//     .then(response => {
+//         if (!(response.ok || response.redirected)){
+//             throw Error(response.status);
+//         }
+//         return response;
+//     })
+//     .then(response => responseHandlingDefinitions[eventTargetID][0](response))
+//     .then(body => {
+//         responseHandlingDefinitions[eventTargetID][1](body);
+//     }).catch(error => {
+//         processFetchError(error);
+//         updateDomByGetRequest(eventTargetID, relResourcePath);
+
+//     });
+// }
 
 
 function updateBody(body){
@@ -314,7 +311,13 @@ function nsubmitScanForm(){
     });
     
     //Here we will want to reset the page
-    setTimeout(updateDomByGetRequest, 1000, currentLoadedPage, `/${currentLoadedPage}`);
+    var loadedPage = currentLoadedPage;
+    setTimeout(updateDomByGetRequest, 700, loadedPage, `/${loadedPage}`);
+    setTimeout(function() {
+        if (loadedPage == currentLoadedPage){
+            updateDomByGetRequest(currentLoadedPage, `/${currentLoadedPage}`);
+        }
+    }, 1000);
 
 
 
@@ -435,7 +438,7 @@ function deleteReport(element){
     var cardHeader;
 
     if (element.tagName == "I"){
-        cardHeader = cardHeader.parentElement.parentElement;
+        cardHeader = element.parentElement.parentElement;
     } else if (element.tagName == "DIV"){
         cardHeader = element.parentElement;
     }
@@ -448,10 +451,11 @@ function deleteReport(element){
     if (deletedScans == finishedScans.length){
         document.getElementById("accordion").outerHTML = "";
     }
-
     //We also delete it from the DOM with a fade out animation
     cardHeader.parentElement.outerHTML = "";
-
+    
+    console.log("here2");
+    //Everything above is good, but there is an issue with deletion
 
     //Server-side preparation
 
@@ -515,7 +519,7 @@ function createRunningReportPage(body){
 
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
-    linkVal = 0;
+    componentLinkVals = 0
     deletedScans = 0
     finishedScans = body;
     var runningReport, finishedReport, message, pageHeader, accordion, i;
@@ -572,6 +576,7 @@ function addButtonsToCard(runningReport){
 
     deleteButton = html2element(deleteButton);
     runningReport.children[0].appendChild(deleteButton);
+
 }
 
 //Adds a scan report to a original pre-existing running report card

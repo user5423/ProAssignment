@@ -27,13 +27,13 @@ app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __
 app.get("/runningScans", (req, resp) => {
     resp.type = "json";
     resp.status = 200;
-    resp.json(runningScans).send();
+    resp.json(runningScans);
 })
 
 app.get("/finishedScans", (req, resp) => {
     resp.type = "json";
     resp.status = 200;
-    resp.json(finishedScans).send();
+    resp.json(finishedScans);
 })
 
 
@@ -49,12 +49,12 @@ app.post("/deleteReport", (req, resp) => {
         writeFinishedScansToFile();
 
         console.log(finishedScans.length);
-        resp.json({"status": 200}).send(); 
+        resp.json({"status": 200}); 
     }
     catch(err){
 
         resp.status(400);
-        resp.json({"status": "error"}).send(); 
+        resp.json({"status": "error"}); 
         return;
     }
 })
@@ -64,12 +64,15 @@ app.get("/networkScanner", (req, resp) => {
     const nmapMethods = {"PageStart" : `<h3>Network Scanner</h3>
                                         <p>There are numerous tools to help you with you're scan. Since this is a demo site, there isn't an extensive number of supported tools
                                         provided out of the box. However, there are a few good tools included.</p>
+                                        <p><b>Unfortunately a new version of node-nmap has broken scans containing -sV and -sC, so do not use those options</b></p>
                                         <div class="form-group ">
-                                            <label for="inputHost">Host (IP address / Hostname):</label>
-                                            <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
-                                            <div class="valid-feedback">Looks good!</div>
-                                            <!--<small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>-->
-                                        </div><br>`,
+                                        <label for="inputHost">Host (IP address / Hostname):</label>
+                                        <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
+                                        <div class="valid-feedback">Looks good!</div>
+                                        <!--<small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>-->
+                                        </div><br>
+                                        
+                                        `,
                                         
                             
                          "FormMethods": {"Scan Technqiues" : {
@@ -99,7 +102,7 @@ app.get("/networkScanner", (req, resp) => {
     };
     resp.type = "json";
     resp.status = 200;
-    resp.json(nmapMethods).send();
+    resp.json(nmapMethods);
 // We need to decide how we are going to create the form
 })
 
@@ -108,7 +111,7 @@ app.post("/networkScanner", (req, resp) => {
         var hostname, params;
         params = processParameters(req);
         hostname = req.body["host"];
-        resp.json({"status": 200}).send(); 
+        resp.json({"status": 200}); 
     }
     catch(err){
         // console.log("error nmap");
@@ -118,7 +121,7 @@ app.post("/networkScanner", (req, resp) => {
         //     resp.status(500);
         // }
         resp.status(400);
-        resp.json({"status": "error"}).send(); 
+        resp.json({"status": "error"}); 
         return;
     }
     
@@ -154,7 +157,7 @@ app.get("/dnsScanner", (req, resp) => {
     };
     resp.type('json');
     resp.status(200);
-    resp.json(dnsMethods).send();
+    resp.json(dnsMethods);
 })
 
 
@@ -164,16 +167,15 @@ app.post("/dnsScanner", (req, resp) => {
         params = processParameters(req);
         hostname = req.body["host"];
         resp.status(200);
-        resp.send();
     }
     catch(err){
         console.log("error dns");
         if (err == "incorrect_request"){
             resp.status(400);
         } else{
-            resp.status(501);
+            resp.status(400);
         }
-        resp.send(); 
+        // resp; 
         return
     }
     
@@ -234,14 +236,6 @@ function isValidHostname(hostname){
 
 
 
-
-
-
-
-
-
-
-
 //TODO: change from array to dictionary as there may be issues if multiple users were using this and the position shifted
 function executeNmapScan(hostname, params){
     nmap.nmapLocation = "./Nmap/nmap.exe"; //default
@@ -250,12 +244,15 @@ function executeNmapScan(hostname, params){
     // console.log(params);
 
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
+
     nmapscan.on('complete', data => {
+        console.log(data);
         // console.log(data);
         transferResultsToFinished(reportObject, data[0]);
         // console.log(finishedScans);
     }).on('error', data => {
         // TODO: Change to deletion
+        console.log(data);
         transferResultsToFinished(reportObject, data[0]);
     });
 

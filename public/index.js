@@ -285,7 +285,13 @@ function nsubmitScanForm(){
             }
         }
 
+    //TODO: We need to reset the values back to false
     if (isValid == false){
+        var results = document.querySelectorAll(`input[value='true']`);
+
+        for(i = 0; i< results.length; i++){
+            results[i].value = "false";
+        }
         return null;
     }
 

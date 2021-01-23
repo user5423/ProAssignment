@@ -71,10 +71,10 @@ function addFormEventListeners(){
             element.addEventListener("click", setRadioStatus(this));
         }
         else if (element.type == "checkbox"){
-            console.log("set");
+            // console.log("set");
             element.addEventListener("click", setCheckboxStatus(this));
         } else {
-            console.log("nothing");
+            // console.log("nothing");
         }
     }
     return null;
@@ -432,10 +432,12 @@ function createForm(formMethods){
 function deleteReport(element){
     //Client-side
     //The element is the trash can, so we need to find the card -- it is two parents up
-    var cardHeader = element.parentElement;
+    var cardHeader;
 
     if (element.tagName == "I"){
-        cardHeader = cardHeader.parentElement;
+        cardHeader = cardHeader.parentElement.parentElement;
+    } else if (element.tagName == "DIV"){
+        cardHeader = element.parentElement;
     }
     //Then we find out which place it is in the list locally -- we can tell by the header
     var cardPosition = cardHeader.id.slice(-1);
@@ -570,10 +572,6 @@ function addButtonsToCard(runningReport){
 
     deleteButton = html2element(deleteButton);
     runningReport.children[0].appendChild(deleteButton);
-    // runningReport.children[0].lastChild.addEventListener("click", deleteReport(this));
-
-    // runningReport.children[0].c
-    // runningReport.children[0].children[-1].addEventListener("click", deleteReport(this))
 }
 
 //Adds a scan report to a original pre-existing running report card

@@ -162,8 +162,6 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
     schedNextGet = function(){
         setTimeout(function() {
             var response = fetchGetRequest(eventTargetID, resourcePath);
-            console.log(response);
-            console.log("hmmm");
             if (response == false){
                 schedNextGet()
             }

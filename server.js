@@ -194,8 +194,6 @@ function validateParams(params, scanname){
     if (params.length == 0 && scanname=="dnsscan"){
         return false;
     } else if (scanname == "nmapscan"){
-        console.log("yo");
-        console.log(params);
         return params;
     }
 
@@ -203,12 +201,10 @@ function validateParams(params, scanname){
   }
 
 function getFilteredScans(filterObj, arrRef, arrName){
-    // console.log(arrRef);
     var filteredScans = [];
     var foundScan = true;
     var filterKeys = Object.keys(filterObj);
     var filterKey;
-    // console.log(filterKeys);
     for (var i =0; i< arrRef.length; i++){
         foundScan = true;
         for (var j = 0; j < filterKeys.length; j++){
@@ -232,7 +228,6 @@ function getFilteredScans(filterObj, arrRef, arrName){
             }
         }
 
-        // console.log(foundScan);
         if (foundScan == true){
             filteredScans.push(arrRef[i]);
         }
@@ -245,12 +240,10 @@ function getFilteredScans(filterObj, arrRef, arrName){
 
 
 function processParameters(req){
-    // console.log(req.body);
     var hostname = req.body["host"];
     var scanType = req.body["scanType"];
 
     if (hostname == undefined || scanType == undefined || !isValidHostname(hostname) || !isSupportedScanType(scanType)){
-        // return;
         throw Error("incorrect_request");
     } 
     
@@ -290,16 +283,12 @@ function isValidHostname(hostname){
 function executeNmapScan(hostname, params){
     nmap.nmapLocation = "./Nmap/nmap.exe"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
-    // console.log("executing nmap scan");
-    // console.log(params);
-
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
 
     nmapscan.on('complete', data => {
-        // console.log(data);
         transferResultsToFinished(reportObject, data[0]);
     }).on('error', data => {
-        // TODO: Change to deletion
+        //TODO: Move errored out scans to some other place
         transferResultsToFinished(reportObject, data[0]);
     });
 
@@ -315,7 +304,6 @@ async function executeDnsScan(hostname, params){
     var promise, param;
     var results = {};
 
-
     for(var i = 0; i < params.length; i++) {
         param = params[i];
         promise = dns.promises.resolve(hostname, param).then((result) => {
@@ -329,15 +317,12 @@ async function executeDnsScan(hostname, params){
         promises.push(promise);
     }
 
-    
     //We are executing multiple scans here, so we need to synchronize the async operations
     for(var j = 0; j < promises.length; j++){
         let result = await promises[j];
         results[params[j]] = result;
     }
 
-        //TODO: Add deletion here from running list
-    
     transferResultsToFinished(arrayPosition, results);
     return null;
 }
@@ -351,14 +336,11 @@ async function executeDnsScan(hostname, params){
 function transferResultsToFinished(reportObject, data){
     var arrayPosition = runningScans.indexOf(reportObject);
     var scanDescriptor = runningScans.splice(arrayPosition,1)[0];
-
     var scanResult = {"scan descriptor": scanDescriptor,
                       "scan results": data };
 
     finishedScans.push(scanResult);
-    // console.dir(finishedScans);
     writeScanResultsToFile(scanResult);
-
     return null;
 }
 
@@ -388,15 +370,12 @@ function getPersistentReports(){
 }
 
 
-
-
 function writeScanResultsToFile(scanResults){
     fs.readFile("reports.json", (err, data) =>{
         if (err) {
             console.log(err);
         }
         else {
-
             //In case the JSON file is corrupted or malformed, we reset it
             try{
                 var reports = JSON.parse(data);
@@ -409,7 +388,6 @@ function writeScanResultsToFile(scanResults){
 
         fs.writeFile("reports.json", JSON.stringify(reports, null, 4), (err) =>{
             if (err) {console.log(err);}});
-        
     });
 
 }
@@ -417,7 +395,6 @@ function writeScanResultsToFile(scanResults){
 function writeFinishedScansToFile(){
     fs.writeFile("reports.json", JSON.stringify(finishedScans, null, 4), (err) =>{
         if (err) {console.log(err);}});
-        
 }
 
 

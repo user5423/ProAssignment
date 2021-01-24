@@ -50,7 +50,7 @@ window.addEventListener("click", event => {
         } else {
             checkDomEvents(eventTarget);
         }
-    } catch(err) {}
+    } catch(err) {} // THis isn't an error -- this will just skip the code block
 
 
     return null;
@@ -536,7 +536,7 @@ function completeRunningReport(runningReport, body){
 }
 
 function addButtonsToCard(runningReport){
-    var deleteButton = `<div class="btn btn-danger btn-lg rounded-0 delete-report" role="delete-report" style="float:right; border-bottom:2px;">
+    var deleteButton = `<div class="btn btn-danger btn-lg rounded-0 delete-report trashButton" role="delete-report">
                             <i class="fa fa-trash-o delete-report" aria-hidden="true"></i>
                         </div>`;
 
@@ -627,20 +627,14 @@ function createRunningReport(scanDescriptor){
 //TODO: We need to consider all the different data-toggle and data-target values here
 //TODO: We need to dynamically assign classes or attributes for js bs4 operations. i.e. words like "one", "two" from stuff like data-target attribute
 function createReportCardHeader(scanDescriptor){
-    var scanColor, scanColorCode, linkVal;
-    scanColorCode = {"nmapscan": "background-color:#563d7c",
-                     "dnsscan": "background-color:#18AB54",
-                     "idsscan": "background-color:#18ABA1"};
-
-    scanColor = scanColorCode[scanDescriptor.scanname];
-    linkVal = String(componentLinkVals++);
+    var linkVal = String(componentLinkVals++);
 
     //Building the card title structure
-    var cardTitle = html2element(`<div class="card-header" id="heading${linkVal}", style="${scanColor} ;padding:0px; border-width:0px;"></div>`);
+    var cardTitle = html2element(`<div class="card-header ${scanDescriptor.scanname}" id="heading${linkVal}"></div>`);
     //Populating card title data
-    cardTitle.innerHTML = `<div style="display:inline"></div>`;
-    cardTitle.children[0].innerHTML = `<h2 style="display:inline" class="mb-0"></h2`;
-    cardTitle.children[0].children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light" type="button" data-toggle="collapse" data-target="#collapse${linkVal}" aria-expanded="true" aria-controls="collapse${linkVal}" style="text-decoration:none"></div>`;
+    cardTitle.innerHTML = `<div class="inlineDisplay"></div>`;
+    cardTitle.children[0].innerHTML = `<h2 class="mb-0 inlineDisplay"></h2`;
+    cardTitle.children[0].children[0].innerHTML = `<div class="btn btn-link btn-block text-left text-light noTextDec" type="button" data-toggle="collapse" data-target="#collapse${linkVal}" aria-expanded="true" aria-controls="collapse${linkVal}"></div>`;
     
     var spanTitle = html2element(`<span class="d-none d-sm-block" data-toggle="collapse" data-target="#collapse${linkVal}"> ${scanDescriptor.scanname} on ${scanDescriptor.hostname} at ${scanDescriptor.timedate}</span>`);
     var spanShortTitle = html2element(`<span class="d-block d-sm-none" data-toggle="collapse" data-target="#collapse${linkVal}"> ${scanDescriptor.scanname} on ${scanDescriptor.hostname}</span>`);

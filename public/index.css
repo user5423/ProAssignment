@@ -34,6 +34,12 @@ html body {
   height:100%;
 }
 
+.navItemLeft {
+  margin-left:auto
+}
+
+
+
 .val-error {
   color: red;
 }
@@ -41,6 +47,40 @@ html body {
 .val-success {
   color: green;
 }
+
+
+.card-header { 
+  padding:0px; 
+  border-width:0px;
+}
+
+
+.trashButton { 
+  float:right; 
+  border-bottom:2px;
+}
+
+.inlineDisplay{
+  display: inline;
+}
+
+.nmapscan {
+    background-color:#563d7c;
+}
+
+.dnsscan {
+  background-color:#18AB54;
+}
+
+.idsscan {
+  background-color:#18ABA1;
+}
+
+.noTextDec {
+  text-decoration:none;
+}
+
+
 
 /* 
 body {

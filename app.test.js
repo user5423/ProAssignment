@@ -2,6 +2,7 @@ const request =  require('supertest');
 const app = require('./server');
 const { TestScheduler } = require('jest');
 const process = require('process');
+const fs = require('fs');
 // const { delete } = require('./server');
 
 app.listen(4444, () => {
@@ -9,12 +10,22 @@ app.listen(4444, () => {
   })
 
 
+async function emptyReports() {
+    try {
+        fs.writeFile("reports.json", JSON.stringify([], null, 4), (err) =>{
+            if (err) {console.log(err);}});
+    } catch (error) {}
+  }
 
-describe('Testing the finishedScans endpoint', () => {
+
+
+
+describe('Testing the /finishedScans endpoint', () => {
     test("GET /finishedScans - succeeds", () => {
         return request(app)
         .get('/finishedScans')
         .expect(200);
+
     });
 
     test("GET /finishedScans - returns JSON", () => {
@@ -45,6 +56,7 @@ describe('Testing the finishedScans endpoint', () => {
     });
 
 
+    emptyReports();
 
 })
 
@@ -97,16 +109,10 @@ describe('Testing the /runningScans endpoint', () => {
 
 
 
+    emptyReports();
 
 
-
-
-
-
-
-
-
-})
+});
 
 
 
@@ -130,6 +136,14 @@ describe('Testing the /networkScanner endpoint', () => {
         })
         .expect(200);
     });
+
+    test("POST /networkScanner - empty parameters", () => {
+        return request(app)
+        .post('/networkScanner')
+        .send({})
+        .expect(400);
+    });
+
 
     test("POST /networkScanner - url parameters that don't exist", () => {
         return request(app)
@@ -197,8 +211,8 @@ describe('Testing the /networkScanner endpoint', () => {
     });
 
 
-    
-})
+    emptyReports();
+});
 
 
 
@@ -297,9 +311,10 @@ describe('Testing the /dnsScanner endpoint', () => {
     });
 
 
+    emptyReports();
 
     
-})
+});
 
 
 
@@ -383,9 +398,12 @@ describe('Testing the /deleteReport endpoint', () => {
              "parameters": [["AAAA"]],
              "hostname": "google.com"})
         .expect(200);
-    })
+    });
 
-})
+
+    emptyReports();
+
+});
 
 
 

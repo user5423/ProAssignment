@@ -63,7 +63,7 @@ app.get("/networkScanner", (req, resp) => {
                                         <label for="inputHost">Host (IP address / Hostname):</label>
                                         <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
                                         <div class="valid-feedback">Looks good!</div>
-                                        <!--<small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>-->
+                                        <small id="emailHelp" class="form-text text-muted">Port scanning is not illegal in the UK. But make sure you abide by the rules or ToS of your network and local legislation</small>
                                         </div><br>
                                         
                                         `,

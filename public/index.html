@@ -34,7 +34,7 @@
 	          <a class="nav-link active" aria-current="page" href="#" id="dnsScanner">DNS Scanner</a>
           </li>
           <li class="nav-item">
-	          <a class="nav-link active" aria-current="page" href="#" id="firewallScanner">IDS Fingerprinter</a>
+	          <a class="nav-link disabled" aria-current="page" href="#" id="firewallScanner">IDS Fingerprinter</a>
           </li>
         </ul>
         
@@ -90,10 +90,15 @@
 
               <h3>Partners</h3>
               <p>We parterned with a range of 3rd party entities which provide us with the security tools for information gathering</p>
-              <img src="./kali_logo.png" class="rounded float-left img-fluid" style="max-height:100px" alt="...">
+              <ul>
+                  <li><b>Nmap</b> - they are the gold standard in the industry for network scanner and vulnerability. Unfortunately, the node-nmap module wrapper is terrible</li>
+                  <li><b>WafW00f</b> - while we couldn't implement this IDS Fingerprinter,  due to issues on windows with packet fragmentation, their tool is great
+                  
+              </ul>
+              <!--<img src="./kali_logo.png" class="rounded float-left img-fluid" style="max-height:100px" alt="...">
               <img src="./nmap_logo.png" class="rounded float-right img-fluid" style="max-height:100px; padding-left:25px" alt="...">
               <img src="./msf_logo.png" class="rounded float-right img-fluid" style="max-height:100px; padding-left:75px" alt="...">
-        
+              -->
         
 
 	
@@ -108,7 +113,6 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-<script src="reportMethods.js"></script>
 <script src="index.js"></script>
 </body>
 </html>

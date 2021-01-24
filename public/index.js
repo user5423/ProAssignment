@@ -105,7 +105,6 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
     var basePath = `http://127.0.0.1:4444`;
     var relativePath = resourcePath;
     resourcePath = `${basePath}${resourcePath}`;
-    console.log(resourcePath);
 
     fetch(resourcePath)
     .then(response => {
@@ -402,12 +401,12 @@ function createForm(formMethods){
         itemType = formMethods[section]["type"];
         isRequired = formMethods[section]["required"];
         formGroup = html2element(`<div class="form-group ${isRequired}"><p><b>${section}</b></p></div>`);
-
+        sectionCounter++;
         // With item type we can decide checkbox
         // No need to provide aria, as the default input and label elements already have semantics that we dont need to overwrite with aria attributes
         for (i = 0; i < formMethods[section]["formItems"].length; i++){
             item = formMethods[section]["formItems"][i];
-            formItemHTML = `<div class="form-check"><input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${++sectionCounter}">
+            formItemHTML = `<div class="form-check"><input class="form-check-input" type="${itemType}" value="false" id="defaultCheck${itemCounter}" name="section${sectionCounter}">
                             <label class="form-check-label" for="defaultCheck${++itemCounter}">${item}</label></div>`;
             appendInnerHTML(formGroup, formItemHTML);
         }

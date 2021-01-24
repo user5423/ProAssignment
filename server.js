@@ -58,7 +58,7 @@ app.get("/networkScanner", (req, resp) => {
     const nmapMethods = {"PageStart" : `<h3>Network Scanner</h3>
                                         <p>There are numerous tools to help you with you're scan. Since this is a demo site, there isn't an extensive number of supported tools
                                         provided out of the box. However, there are a few good tools included.</p>
-                                        <p><b>Unfortunately a new version of node-nmap has broken scans containing -sV and -sC, so do not use those options</b></p>
+                                        <p><b>Unfortunately a new version of node-nmap has introduced instability to certain scan types such as -sV</b></p>
                                         <div class="form-group ">
                                         <label for="inputHost">Host (IP address / Hostname):</label>
                                         <input type="text" class="form-control" id="inputHost" aria-describedby="emailHelp" placeholder="Enter Host">
@@ -277,10 +277,8 @@ function isValidHostname(hostname){
 }
 
 
-
-
-//TODO: change from array to dictionary as there may be issues if multiple users were using this and the position shifted
 function executeNmapScan(hostname, params){
+    //TODO check whether nmap is in path
     nmap.nmapLocation = "./Nmap/nmap.exe"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
     var reportObject = logScanAsRunning("nmapscan", hostname, params);

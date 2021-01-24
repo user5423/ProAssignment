@@ -39,7 +39,7 @@ app.get("/finishedScans", (req, resp) => {
 app.post("/deleteReport", (req, resp) => {
     //So we need to have a valid object to search for
     try {
-        if (Object.keys(req.body).sort() != ["scanname", "timedate", "parameters", "hostname"].sort()){
+        if (JSON.stringify(Object.keys(req.body).sort()) != JSON.stringify(["scanname", "timedate", "parameters", "hostname"].sort())){
             throw Error("incorrect scan descriptor variables");
         }
 
@@ -429,13 +429,16 @@ function writeFinishedScansToFile(){
 
 
 
+if (!module.parent){
+    app.listen(4444, () => {
+    console.log(`GWI Toolkit listening at http://127.0.0.1:${4444}`);
+  });
+
+}
+
 module.exports = app;
 
 
-
-// app.listen(4444, () => {
-//     console.log(`GWI Toolkit listening at http://127.0.0.1:${4444}`);
-//   })
 
 
 

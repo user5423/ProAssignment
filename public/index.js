@@ -28,10 +28,7 @@ var domEventDefinitions = {"type": {"radio": setRadioStatus,
                         };
 
 var currentLoadedPage = "index";
-
 var componentLinkVals = 0;
-
-var runningScans = {};
 var finishedScans = {};
 var deletedScans = 0;
 
@@ -52,13 +49,12 @@ window.addEventListener("click", event => {
             nsubmitScanForm(currentLoadedPage);
         } else {
             checkDomEvents(eventTarget);
-            console.log("This event id isn't registered");
         }
     } catch(err) {}
 
 
     return null;
-})
+});
 
 
 //TODO-F: Maybe repurpose this function to take parameters so that it isn't hardcoded
@@ -71,39 +67,22 @@ function addFormEventListeners(){
             element.addEventListener("click", setRadioStatus(this));
         }
         else if (element.type == "checkbox"){
-            // console.log("set");
             element.addEventListener("click", setCheckboxStatus(this));
-        } else {
-            // console.log("nothing");
         }
     }
     return null;
 }
 
 
-
-
 // Parsing Methods //
 
-
 function jsonParse(response){ return response.json();}
-
 function htmlParse(response){ return response.text();}
-
-
-
-
-
-
-
 
 
 //Dom Manipulation and Checking Methods //
 
-
-
 function checkDomEvents(eventTarget){
-    console.log(eventTarget);
     var key, value;
     for(key in domEventDefinitions){
         for (value in domEventDefinitions[key]){
@@ -139,7 +118,7 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
         responseHandlingDefinitions[eventTargetID][1](body);
     }).catch(error => {
         processFetchError(error);
-    })
+    });
 
 }
 
@@ -200,7 +179,6 @@ function updateBody(body){
 
 function processFetchError(error){
     // If ther error is not a number there was a networking issue
-    console.log(error);
     if (isNaN(error)){
         // document.getElementById("body").innerHTML = `<h4>There was a networking issue that caused the request to fail. This could have been anything from a disconnect to failed DNS lookup</h4>`;
         document.getElementById("body").innerHTML = `<h4>We detected a networking error of some sort - this could be anything from the server being down to a unresolved DNS request</h4>`;
@@ -237,8 +215,7 @@ function nsubmitScanForm(){
     //Iterating over each formgroup
     for (i = 0; i < formGroupCollection.length; i++){
         var formGroup = formGroupCollection[i];
-        var isRequired = formGroup.classList.contains("required")
-        
+        var isRequired = formGroup.classList.contains("required");
         
         formItemCollection = formGroup.getElementsByClassName("form-check");
         formSearch = formGroup.getElementsByClassName("form-control");
@@ -249,7 +226,7 @@ function nsubmitScanForm(){
             formSearch = formSearch[0];
             //We start by checking that it isn't empty
             if (isValidHostname(formSearch)){
-                formJson["host"] = input.value
+                formJson["host"] = input.value;
             }
             else {
                 isValid = false;
@@ -257,7 +234,6 @@ function nsubmitScanForm(){
 
         } else {
             // If we are dealing with a formItemCollection - i.e. a bunch of checboxes and radioboxes
-            console.log(formItemCollection[i]);
             if (isRequired){
                 if (!isValidItemGroup(formGroup)){
                     isValid = false;
@@ -265,14 +241,12 @@ function nsubmitScanForm(){
                 }
             }
 
-            console.log(formItemCollection.length);
             //We iterate of them
             for (j=0; j < formItemCollection.length; j++){
                 item = formItemCollection[j];
                 input = item.children[0];
                 label = item.children[1];
 
-                console.log(input.value);
                 if ((item.classList.contains("form-check") == true)){
                         if (input.value == "true"){
                             formJson[label.getElementsByTagName("b")[0].innerText] = input.value;
@@ -288,17 +262,13 @@ function nsubmitScanForm(){
     //TODO: We need to reset the values back to false
     if (isValid == false){
         var results = document.querySelectorAll(`input[value='true']`);
-
         for(i = 0; i< results.length; i++){
             results[i].value = "false";
         }
         return null;
     }
 
-
     formJson.scanType = currentLoadedPage;
-    console.log("yo");
-    console.log(JSON.stringify(formJson));
 
     fetch(`http://127.0.0.1:4444/${currentLoadedPage}`, {
         method: 'POST',
@@ -365,7 +335,7 @@ function isValidHostname(formSearch){
         addSuccessMessage(formSearch, `Correct hostname`);
         return true;
     }
-    addErrorMessage(formSearch, `Please enter a valid hostname!`)
+    addErrorMessage(formSearch, `Please enter a valid hostname!`);
     return false;
 }
 
@@ -384,7 +354,7 @@ function createScanPage(body){
 
     htmlBio = createBio(body["PageStart"]);
     htmlForm = createForm(body["FormMethods"]);
-    bodyContainer = html2element(`<div class="row"></div>`)
+    bodyContainer = html2element(`<div class="row"></div>`);
 
     appendInnerHTML(bodyContainer, "<div>");
     bodyContainer.children[0].innerHTML = htmlBio + htmlForm;
@@ -424,12 +394,12 @@ function createForm(formMethods){
         }
 
         appendInnerHTML(formElement, formGroup.outerHTML);
-        appendInnerHTML(formElement, "<br>")
+        appendInnerHTML(formElement, "<br>");
     }
 
     //We do need aria for this div though
     // Replaced button with div in order to fix behaviour bug that was caused by bs4's javascript code
-    appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary" role="submitform" aria-label="Click to submit the form">Submit</div>`)
+    appendInnerHTML(formElement, `<div id="submitScanForm" class="btn btn-primary" role="submitform" aria-label="Click to submit the form">Submit</div>`);
     return formElement.outerHTML;
 }
 
@@ -450,29 +420,23 @@ function deleteReport(element){
     }
     //Then we find out which place it is in the list locally -- we can tell by the header
     var cardPosition = cardHeader.id.slice(-1);
-    console.log(cardPosition);
     
     //Cleaning up empty accordion
-    deletedScans += 1
+    deletedScans += 1;
     if (deletedScans == finishedScans.length){
         document.getElementById("accordion").outerHTML = "";
     }
     //We also delete it from the DOM with a fade out animation
     cardHeader.parentElement.outerHTML = "";
     
-    console.log("here2");
     //Everything above is good, but there is an issue with deletion
 
     //Server-side preparation
 
     //we then send the scan descriptor of the report that we want to delete
     var scanDescriptor;
-
     scanDescriptor = finishedScans[cardPosition]["scan descriptor"];
-
-    console.log(scanDescriptor);
     //Then the server needs to handle it from there
-    
     fetch(`http://127.0.0.1:4444/deleteReport`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json',},
@@ -485,8 +449,7 @@ function deleteReport(element){
         processFetchError(error);
     });
 
-    console.log("deleted");
-    return
+    return null;
 }
 
 
@@ -497,13 +460,11 @@ function deleteReport(element){
 //TODO: Finish or remove a functional search bar
 function createRunningReportPage(body){
     componentLinkVals =0;
-    runningScans = body;
     var pageHeader, message, spinner, accordion, i;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
     pageHeader = `<h3>Running Scans</h3><br>`;
     appendInnerHTML(document.getElementById("body"), pageHeader);
-    console.log(body);
     // In case there are no scans, we return an error message
     if (body.length == 0){
         message = `<p> There are no currently running scans detected. To populate this page, you need to initiate a scan.</p><p>We are attempting to detect new submitted scan requests. Are you expecting a scan to be here? It's
@@ -511,6 +472,12 @@ function createRunningReportPage(body){
         spinner = `<div class="text-center"><div class="spinner-border" role="status"></div></div>`;
         appendInnerHTML(document.getElementById("body"), message+spinner);
         return null;
+    } else {
+        message = `<p> There are currently running scans detected. Are you expecting another scan to be here? It's
+        possible that the scan is incredibly fast that it went straight to the finished scans section, or that upon 
+        further server-side inspection it was deemed invalid</p>`;
+        appendInnerHTML(document.getElementById("body"), message);
+
     }
 
     //We create an empty accordion that will parent the card reports
@@ -525,21 +492,22 @@ function createRunningReportPage(body){
 
 //TODO: Rename the parameter body to something else more representative
 function createFinishedReportPage(body){
-    componentLinkVals = 0
-    deletedScans = 0
+    componentLinkVals = 0;
+    deletedScans = 0;
     finishedScans = body;
-    var runningReport, finishedReport, message, pageHeader, accordion, i;
+    var runningReport, finishedReport, message, pageHeader, accordion, i, spinner;
     //Create default header for webpage
     document.getElementById("body").innerHTML = "";
     pageHeader = `<h3>Finished Scans</h3><p>Been waiting a while? Depending on what scan you chose and it's parameters, it can take from a couple of seconds, to even a couple of hours. 
                         However, I've tried to limit what types of scans you have access to, so at the most, it shouldn't take more than ten minutes.</p>
-                    <p>While you are waiting why don't you take a look at the below scans by clicking on the scan titles, and look at their respective results</p><br>`;
+                    <p>While you are waiting why don't you take a look at the below scans by clicking on the scan titles, and look at their respective results</p>`;
     appendInnerHTML(document.getElementById("body"), pageHeader);
 
     // In case there are no scans, we return an error message
     if (body.length == 0){
         message = `<p> There are no finished scans detected in this current session or in previous sessions. To populate this page, you need to complete a scan.`;
-        appendInnerHTML(document.getElementById("body"), message);
+        spinner = `<div class="text-center"><div class="spinner-border" role="status"></div></div>`;
+        appendInnerHTML(document.getElementById("body"), message+spinner);
 
     } else {
         //We create an empty accordion that will parent the card reports
@@ -559,21 +527,13 @@ function createFinishedReportPage(body){
 //This should have a scan results and scan descriptor on body
 function completeRunningReport(runningReport, body){
     //the runningReport element is the card element
-
     addButtonsToCard(runningReport);
-
-    console.log(runningReport);
     if (body["scan descriptor"].scanname == "dnsscan"){
         return createScanReport(runningReport, body);
     } else if (body["scan descriptor"].scanname == "nmapscan"){
         return createScanReport(runningReport, body);
-    } else {
-        console.log("Incorrect report created");
-    }
-
-
+    } 
 }
-
 
 function addButtonsToCard(runningReport){
     var deleteButton = `<div class="btn btn-danger btn-lg rounded-0 delete-report" role="delete-report" style="float:right; border-bottom:2px;">
@@ -593,19 +553,19 @@ function createScanReport(runningReport, scanObject){
     resultKeys = Object.keys(scanObject["scan results"]);
 
     for (i = 0; i < resultKeys.length; i++){    
-        key = resultKeys[i], value = scanObject["scan results"][key] 
+        key = resultKeys[i], value = scanObject["scan results"][key];
 
         if (Array.isArray(value) && value.length > 1 && isObject(value[0])) {
-            table1 = createNestedObjectTable(value)
+            table1 = createNestedObjectTable(value);
             appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
 
         } else if (isObject(value)){
-            table1 = createTable(value, `<tr><th scope="row">{key}</th><td>{value}</td></tr>`)
-            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+            table1 = createTable(value, `<tr><th scope="row">{key}</th><td>{value}</td></tr>`);
+            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
 
         } else if (Array.isArray(value) && value.length > 1) {
-            table1 = createTable(value, `<tr><td>{value}</td></tr>`)          
-            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`)
+            table1 = createTable(value, `<tr><td>{value}</td></tr>`);
+            appendInnerHTML(table.children[0], `<tr><th scope="row">${key}</th><td>${table1.outerHTML}</td>`);
         
         } else {
             row = `<tr><th scope="row">${key}</th><td>${value}</td></tr>`;
@@ -628,7 +588,7 @@ function createTable(values, rowStructure){
         row = rowStructure.replace("{key}", key).replace("{value}", value);
         appendInnerHTML(table.children[0], row);
     }
-    return table
+    return table;
 }
 
 //This creates a table where the parameters input format is key:value items
@@ -641,7 +601,7 @@ function createNestedObjectTable(values){
         rows = `<tr><td>${values1.join("</td><td>")}</td></tr>`;
         appendInnerHTML(table.children[1], rows);
     }
-    return table
+    return table;
 }
 
 
@@ -670,7 +630,7 @@ function createReportCardHeader(scanDescriptor){
     var scanColor, scanColorCode, linkVal;
     scanColorCode = {"nmapscan": "background-color:#563d7c",
                      "dnsscan": "background-color:#18AB54",
-                     "idsscan": "background-color:#18ABA1"}
+                     "idsscan": "background-color:#18ABA1"};
 
     scanColor = scanColorCode[scanDescriptor.scanname];
     linkVal = String(componentLinkVals++);
@@ -693,7 +653,7 @@ function createReportCardHeader(scanDescriptor){
     // class = "d-none d-sm-block"
 
     //Building the card title description structure
-    var scanDescription = html2element(`<div id="collapse${linkVal}" class="collapse" aria-labelledby="heading${linkVal}" data-parent="#accordion"><div class="card-body"></div></div>`)
+    var scanDescription = html2element(`<div id="collapse${linkVal}" class="collapse" aria-labelledby="heading${linkVal}" data-parent="#accordion"><div class="card-body"></div></div>`);
     scanDescription.innerHTML =`<div class="card-body"></div>`;
     var parameters = scanDescriptor.parameters;
 

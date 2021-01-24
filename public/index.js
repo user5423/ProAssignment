@@ -101,10 +101,11 @@ function checkDomEvents(eventTarget){
 
 
 function updateDomByGetRequest(eventTargetID, resourcePath){
-    // if (currentLoadedPage != eventTargetID){
+    // if (currentLoadedPage == eventTargetID){
     //     return false;
     // }
-    resourcePath = `http://127.0.0.1:4444${resourcePath}`;
+    var basePath = `http://127.0.0.1:4444`;
+    resourcePath = `${basePath}${resourcePath}`;
 
     fetch(resourcePath)
     .then(response => {
@@ -115,7 +116,11 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
     })
     .then(response => responseHandlingDefinitions[eventTargetID][0](response))
     .then(body => {
-        responseHandlingDefinitions[eventTargetID][1](body);
+        if (currentLoadedPage == eventTargetID){
+            responseHandlingDefinitions[eventTargetID][1](body);
+        } else {
+            console.log("You switched too quickliy :)");
+        }
     }).catch(error => {
         processFetchError(error);
     });
@@ -288,7 +293,7 @@ function nsubmitScanForm(){
     
     //Here we will want to reset the page
     var loadedPage = currentLoadedPage;
-    setTimeout(updateDomByGetRequest, 700, loadedPage, `/${loadedPage}`);
+    setTimeout(updateDomByGetRequest, 1000, loadedPage, `/${loadedPage}`);
     setTimeout(function() {
         if (loadedPage == currentLoadedPage){
             updateDomByGetRequest(currentLoadedPage, `/${currentLoadedPage}`);

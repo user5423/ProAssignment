@@ -5,8 +5,6 @@ var fs = require("fs");
 const nmap = require('node-nmap');
 const dns = require('dns');
 const { nextTick } = require('process');
-// const util = require('util')
-// const { report } = require('process');
 
 var app = express();
 
@@ -25,20 +23,20 @@ var finishedScans = getPersistentReports();
 app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
 
 app.get("/runningScans", (req, resp) => {
+    var filteredScans = getFilteredScans(req.query, runningScans, "runningScan");
     resp.type = "json";
     resp.status = 200;
-    resp.json(runningScans);
+    resp.json(filteredScans);
 })
 
 app.get("/finishedScans", (req, resp) => {
+    var filteredScans = getFilteredScans(req.query, finishedScans, "finishedScan");
     resp.type = "json";
     resp.status = 200;
-    resp.json(finishedScans);
+    resp.json(filteredScans);
 })
 
-
 app.post("/deleteReport", (req, resp) => {
-    console.log(Object(req.body));
     //So we need to have a valid object to search for
     try {
         for (var i =0; i < finishedScans.length; i++){
@@ -47,12 +45,9 @@ app.post("/deleteReport", (req, resp) => {
             }
         }
         writeFinishedScansToFile();
-
-        console.log(finishedScans.length);
         resp.json({"status": 200}); 
     }
     catch(err){
-
         resp.status(400);
         resp.json({"status": "error"}); 
         return;
@@ -100,10 +95,9 @@ app.get("/networkScanner", (req, resp) => {
                                             }
                         
     };
-    resp.type = "json";
-    resp.status = 200;
+    resp.type('json');
+    resp.status(200);
     resp.json(nmapMethods);
-// We need to decide how we are going to create the form
 })
 
 app.post("/networkScanner", (req, resp) => {
@@ -114,13 +108,8 @@ app.post("/networkScanner", (req, resp) => {
         resp.json({"status": 200}); 
     }
     catch(err){
-        // console.log("error nmap");
-        // if (err == "incorrect_request"){
-        //     resp.status(400);
-        // } else{
-        //     resp.status(500);
-        // }
         resp.status(400);
+        resp.type('json');
         resp.json({"status": "error"}); 
         return;
     }
@@ -165,20 +154,21 @@ app.post("/dnsScanner", (req, resp) => {
     try {
         var hostname, params;
         params = processParameters(req);
+        if ((params = validateParams(params, "dnsscan")) == false){
+            throw Error("Not a single valid param, so we are exiting scan");
+        }
         hostname = req.body["host"];
         resp.status(200);
     }
     catch(err){
-        console.log("error dns");
-        if (err == "incorrect_request"){
-            resp.status(400);
-        } else{
-            resp.status(400);
-        }
-        // resp; 
-        return
+        resp.status(400);
+        resp.type('json');
+        resp.json({"status": "error"}); 
+        return;
+
     }
     
+    resp.send();
     executeDnsScan(hostname, params);
 })
 
@@ -188,9 +178,70 @@ app.post("/dnsScanner", (req, resp) => {
 
 
 
+function validateParams(params, scanname){
+    var definitions = { "dnsscan" : ["A", "AAAA", "CNAME", "MX", "SOA", "TXT", "NS"],
+                        "nmapscan" : ["-sT", "-sU", "-sV", "-p-", "-p1-1000", "-sV", "-sC"]};
+
+    params = Object.values(params);
+    var newSet = new Set();
+    if (definitions[scanname] != undefined){
+        for(var i = 0; i< params.length; i++){
+            if (definitions[scanname].includes(params[i])){
+                newSet.add(params[i]);
+            }
+        }
+    }
+
+    params = Array.from(newSet);
+    if (params.length == 0){
+        return false;
+    }
+    return params;
+  }
 
 
 
+
+
+function getFilteredScans(filterObj, arrRef, arrName){
+    // console.log(arrRef);
+    var filteredScans = [];
+    var foundScan = true;
+    var filterKeys = Object.keys(filterObj);
+    var filterKey;
+    // console.log(filterKeys);
+    for (var i =0; i< arrRef.length; i++){
+        foundScan = true;
+        for (var j = 0; j < filterKeys.length; j++){
+            filterKey = filterKeys[j];
+            try {
+                if (arrName == "finishedScan"){
+                    if (arrRef[i]["scan descriptor"][filterKey] != filterObj[filterKeys[j]]){
+                        foundScan = false;
+                        break;            
+                    }
+                } else if (arrName == "runningScan"){
+                    if (arrRef[i][filterKey] != filterObj[filterKeys[j]]){
+                        foundScan = false;
+                        break;   
+                    }
+                }
+
+            } catch(err){
+                foundScan = false;
+                break;
+            }
+        }
+
+        // console.log(foundScan);
+        if (foundScan == true){
+            filteredScans.push(arrRef[i]);
+        }
+
+    }
+    return filteredScans;
+
+}
 
 
 
@@ -246,13 +297,10 @@ function executeNmapScan(hostname, params){
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
 
     nmapscan.on('complete', data => {
-        console.log(data);
         // console.log(data);
         transferResultsToFinished(reportObject, data[0]);
-        // console.log(finishedScans);
     }).on('error', data => {
         // TODO: Change to deletion
-        console.log(data);
         transferResultsToFinished(reportObject, data[0]);
     });
 
@@ -381,7 +429,7 @@ module.exports = app;
 
 
 app.listen(4444, () => {
-    console.log(`Example app listening at http://127.0.0.1:${4444}`)
+    console.log(`GWI Toolkit listening at http://127.0.0.1:${4444}`);
   })
 
 

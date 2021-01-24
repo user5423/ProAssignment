@@ -101,11 +101,11 @@ function checkDomEvents(eventTarget){
 
 
 function updateDomByGetRequest(eventTargetID, resourcePath){
-    // if (currentLoadedPage == eventTargetID){
-    //     return false;
-    // }
+    var isError = true;
     var basePath = `http://127.0.0.1:4444`;
+    var relativePath = resourcePath;
     resourcePath = `${basePath}${resourcePath}`;
+    console.log(resourcePath);
 
     fetch(resourcePath)
     .then(response => {
@@ -118,12 +118,26 @@ function updateDomByGetRequest(eventTargetID, resourcePath){
     .then(body => {
         if (currentLoadedPage == eventTargetID){
             responseHandlingDefinitions[eventTargetID][1](body);
-        } else {
-            console.log("You switched too quickliy :)");
         }
+        
     }).catch(error => {
+        // console.log("ERROR");
+        isError = false;
         processFetchError(error);
+
+        var schedNextGet;
+        schedNextGet = function(){
+            setTimeout(function() {
+                var response = updateDomByGetRequest(eventTargetID, relativePath);
+                if (response == false){schedNextGet();}
+            }, 1000, eventTargetID, resourcePath);
+        };
+
+        schedNextGet();
+
     });
+
+    return isError;
 
 }
 

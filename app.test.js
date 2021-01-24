@@ -2,59 +2,11 @@ const request =  require('supertest');
 const app = require('./server');
 const { TestScheduler } = require('jest');
 const process = require('process');
+// const { delete } = require('./server');
 
 app.listen(4444, () => {
     console.log(`Example app listening at http://127.0.0.1:${4444}`)
   })
-
-
-// describe('Testing API endpoint content-type', () => {
-
-//     it('Should return all JSON content type', async () => {
-//         const res = await request(app).get("/runningScans")
-
-//         expect(res.statusCode).toEqual(200)
-//         expect(res.body).toHaveProperty("get")
-//     }
-    
-//     )})
-
-
-//Some reason this isn't working vv
-
-// var staticPages = ["/runningScans", "/finishedScans", "/networkScanner", "/dnsScanner"];
-// for (var i = 0; i <= staticPages.length; i++) {
-//     var endpoint = staticPages[i];
-//     describe('Testing the static get api endpoints', () => {
-
-//             test(`GET ${endpoint} succeeds`, () => {
-//                 return request(app)
-//                 .get(`${endpoint}`)
-//                 .expect(200);
-//             });
-
-//             test(`GET ${endpoint} returns JSON`, () => {
-//                 return request(app)
-//                 .get(`${endpoint}`)
-//                 .expect(`Content-type`, /json/);
-
-//             });
-
-//             //THis should succeed as random url parameters should just be ignored
-//             //TODO: We are going to add ways to select certain scans via url query strings
-//             test(`GET ${endpoint} with random parameters`, () => {
-//                 return request(app)
-//                 .get(`${endpoint}?q=random&kb=random`)
-//                 .expect(200);
-//             });
-
-        
-//     });
-// }
-
-
-
-
 
 
 
@@ -62,7 +14,7 @@ describe('Testing the finishedScans endpoint', () => {
     test("GET /finishedScans - succeeds", () => {
         return request(app)
         .get('/finishedScans')
-        .expect('Content-type', /json/);
+        .expect(200);
     });
 
     test("GET /finishedScans - returns JSON", () => {
@@ -95,6 +47,10 @@ describe('Testing the finishedScans endpoint', () => {
 
 
 })
+
+
+
+
 
 describe('Testing the /runningScans endpoint', () => {
     test("GET /runningScans - succeeds", () => {
@@ -346,10 +302,99 @@ describe('Testing the /dnsScanner endpoint', () => {
 })
 
 
+
+
+
+
+
+
+
+
+
+
+describe('Testing the /deleteReport endpoint', () => {
+    
+    test("POST /deleteReport - success", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({"scanname": "dnsscan",
+             "timedate": "2021-01-24T11:18:06.946Z",
+             "parameters": [["A"]],
+             "hostname": "google.com"})
+        .expect(200);
+    });
+
+
+    test("POST /deleteReport - JSON content-type", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({"scanname": "dnsscan",
+             "timedate": "2021-01-24T11:18:06.946Z",
+             "parameters": [["A"]],
+             "hostname": "google.com"})
+        .expect('Content-type', /json/);
+    });
+
+
+    test("POST /deleteReport - not enough parameters", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({
+            "host": "google.com",
+            "scanType": "dnsscan"
+        })
+        .expect(400);
+    });
+
+    test("POST /deleteReport - empty parameters", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({})
+        .expect(400);
+    });
+
+    test("POST /deleteReport - too many parameters", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({"scanname": "dnsscan",
+        "timedate": "something",
+        "parameters": "somethingElse",
+        "hostname": "google.com",
+        "extraParam": "sup"})
+        .expect(400);
+    });
+
+
+    test("POST /deleteReport - correct parameter keys + incorrect values", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({"scanname": "dnsscan",
+             "timedate": "something",
+             "parameters": "somethingElse",
+             "hostname": "google.com"})
+        .expect(200);
+    });
+
+    test("POST /deleteReport - correct parameter keys + correct values", () => {
+        return request(app)
+        .post('/deleteReport')
+        .send({"scanname": "dnsscan",
+             "timedate": "2021-01-24T11:18:06.946Z",
+             "parameters": [["AAAA"]],
+             "hostname": "google.com"})
+        .expect(200);
+    })
+
+})
+
+
+
+
+
+
+
 // runningScans
 
 // finishedScans
 
 // networkScanner
-
-//

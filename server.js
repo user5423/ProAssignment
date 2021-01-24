@@ -4,13 +4,11 @@ var express = require('express');
 var fs = require("fs");
 const nmap = require('node-nmap');
 const dns = require('dns');
-const { nextTick } = require('process');
-
 var app = express();
 
-app.use(express.static('public'))
-app.use(express.static("assets"))
-app.use(express.static("js"))
+app.use(express.static('public'));
+app.use(express.static("assets"));
+app.use(express.static("js"));
 
 app.use(express.json());
 
@@ -20,21 +18,21 @@ var runningScans = [];
 var finishedScans = getPersistentReports();
 
 
-app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }))
+app.get("/index", (req, resp) => resp.sendFile('./public/index.html', { root: __dirname }));
 
 app.get("/runningScans", (req, resp) => {
     var filteredScans = getFilteredScans(req.query, runningScans, "runningScan");
     resp.type = "json";
     resp.status = 200;
     resp.json(filteredScans);
-})
+});
 
 app.get("/finishedScans", (req, resp) => {
     var filteredScans = getFilteredScans(req.query, finishedScans, "finishedScan");
     resp.type = "json";
     resp.status = 200;
     resp.json(filteredScans);
-})
+});
 
 app.post("/deleteReport", (req, resp) => {
     //So we need to have a valid object to search for
@@ -42,8 +40,6 @@ app.post("/deleteReport", (req, resp) => {
         if (JSON.stringify(Object.keys(req.body).sort()) != JSON.stringify(["scanname", "timedate", "parameters", "hostname"].sort())){
             throw Error("incorrect scan descriptor variables");
         }
-
-
         for (var i =0; i < finishedScans.length; i++){
             if (JSON.stringify(finishedScans[i]["scan descriptor"]) == JSON.stringify(Object(req.body))){
                 finishedScans.splice(i, 1);
@@ -57,9 +53,7 @@ app.post("/deleteReport", (req, resp) => {
         resp.json({"status": "error"}); 
         return;
     }
-})
-
-
+});
 app.get("/networkScanner", (req, resp) => {
     const nmapMethods = {"PageStart" : `<h3>Network Scanner</h3>
                                         <p>There are numerous tools to help you with you're scan. Since this is a demo site, there isn't an extensive number of supported tools
@@ -103,12 +97,15 @@ app.get("/networkScanner", (req, resp) => {
     resp.type('json');
     resp.status(200);
     resp.json(nmapMethods);
-})
+});
 
 app.post("/networkScanner", (req, resp) => {
     try {
         var hostname, params;
         params = processParameters(req);
+        if ((params = validateParams(params, "nmapscan")) === false){
+            throw Error("Not a single valid param, so we are exiting scan");
+        }
         hostname = req.body["host"];
         resp.json({"status": 200}); 
     }
@@ -121,7 +118,7 @@ app.post("/networkScanner", (req, resp) => {
     
     executeNmapScan(hostname, params);
 
-})
+});
 
 
 app.get("/dnsScanner", (req, resp) => {
@@ -152,7 +149,7 @@ app.get("/dnsScanner", (req, resp) => {
     resp.type('json');
     resp.status(200);
     resp.json(dnsMethods);
-})
+});
 
 
 app.post("/dnsScanner", (req, resp) => {
@@ -175,12 +172,7 @@ app.post("/dnsScanner", (req, resp) => {
     
     resp.send();
     executeDnsScan(hostname, params);
-})
-
-
-
-
-
+});
 
 
 function validateParams(params, scanname){
@@ -198,15 +190,17 @@ function validateParams(params, scanname){
     }
 
     params = Array.from(newSet);
-    if (params.length == 0){
+
+    if (params.length == 0 && scanname=="dnsscan"){
         return false;
+    } else if (scanname == "nmapscan"){
+        console.log("yo");
+        console.log(params);
+        return params;
     }
+
     return params;
   }
-
-
-
-
 
 function getFilteredScans(filterObj, arrRef, arrName){
     // console.log(arrRef);
@@ -330,7 +324,7 @@ async function executeDnsScan(hostname, params){
             }
             return "Scan was unable to complete successfully";
             
-        }).catch(error => {return "Scan was unable to complete successfully";});
+        }).catch(error => {return `Scan was unable to complete successfully: ${error}`;});
 
         promises.push(promise);
     }
@@ -382,7 +376,7 @@ function logScanAsRunning(scanname, hostname, params){
 }
 
 function getPersistentReports(){
-    const data = fs.readFileSync("./reports.json") 
+    const data = fs.readFileSync("./reports.json"); 
     
     try {
         var temp = JSON.parse(data);
@@ -414,7 +408,7 @@ function writeScanResultsToFile(scanResults){
         }
 
         fs.writeFile("reports.json", JSON.stringify(reports, null, 4), (err) =>{
-            if (err) {console.log(err);}})
+            if (err) {console.log(err);}});
         
     });
 
@@ -422,7 +416,7 @@ function writeScanResultsToFile(scanResults){
 
 function writeFinishedScansToFile(){
     fs.writeFile("reports.json", JSON.stringify(finishedScans, null, 4), (err) =>{
-        if (err) {console.log(err);}})
+        if (err) {console.log(err);}});
         
 }
 

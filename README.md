@@ -25,6 +25,8 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
         3) sudo apt-get install nmap
         4) Find the path of the binary in /bin or wherever it is and set the variable nmap.nmapLocation = "binaryFile" to it
 
+    NOTE: Make sure to you use your respective package manager, i.e. replace apt-get with yum or pacman if needed
+
     Otherwise:
         use "whereis nmap" to find the location of the binary. Note the path of the binary might be  /usr/bin/nmap as it was in mine for Kali Linux. Therefore the path would have beem nmap.nmapLocation = "/usr/bin/nmap". For kali, it only worked when I pointed to "/usr/bin/" and didn't when "/usr/bin/nmap". This isn't my fault as this node-nmap module was written poorly.
 

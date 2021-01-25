@@ -20,6 +20,8 @@ app.use(express.json());
 nmap.nmapLocation = "C:\\Program Files (x86)\\Nmap\\Nmap.exe"; //default Windows install
 // nmap.nmapLocation = "/usr/bin"; //default Linux folder
 
+//NOTE: If poiting to the binary doesn't work, try pointing to the folder. 
+
 //NOTE: Make sure only one instance of nmap.nmapLocation is active
 
 

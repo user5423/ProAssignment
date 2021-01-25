@@ -44,7 +44,9 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
 
 
 
+## NOTE: Nmap scans can take sometimes 10 minutes. 
 
+So if your scan request is in "runningScans" you know execution was initated succesfuly. So come back later or view a pre-done scan in the "scan Reports" tab
 
 ## NOTE 1: If you didn't install it and you ran the nmap scan. You need to save the reports.json with an empty array []
 

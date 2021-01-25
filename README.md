@@ -33,7 +33,7 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
 ## NOTE if the site still doesn't work. 
 
     1) If the scan reports scan shows an erros, Shut down the server
-    2) Reset reports.json to [] and save
+    2) Copy contents of backupreports.json to reports.json
     3) Try setting the nmap.nmapLocation = "the/folder/containingnmap/" instead of the path to binary i.ea "the/folder/containingnmap/nmapfile"
 
 
@@ -50,7 +50,9 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
 
 So if your scan request is in "runningScans" you know execution was initated succesfuly. So come back later or view a pre-done scan in the "scan Reports" tab
 
-## NOTE 1: If you didn't install it and you ran the nmap scan. You need to save the reports.json with an empty array []
+## NOTE 1: If you didn't install it and you ran the nmap scan. 
+
+    Shutdown the server and copy the contents of backupreports.json to the reports.json
 
 ## NOTE 2: Node-nmap module no longer allows -sS and -sT parameters on the same scan. 
 

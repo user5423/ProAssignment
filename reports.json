@@ -181,5 +181,284 @@
                 "minttl": 3600
             }
         }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:18:35.745Z",
+            "hostname": "hackthebox.eu",
+            "parameters": [
+                [
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "hackthebox.eu",
+            "ip": "104.20.55.68",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:18:53.850Z",
+            "hostname": "null-byte.wonderhowto.com",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "104.193.19.59"
+            ],
+            "AAAA": "Scan was unable to complete successfully: Error: queryAaaa ENODATA null-byte.wonderhowto.com",
+            "MX": "Scan was unable to complete successfully: Error: queryMx ENODATA null-byte.wonderhowto.com"
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:19:07.570Z",
+            "hostname": "hackthebox.eu",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "104.20.55.68",
+                "104.20.66.68",
+                "172.67.1.1"
+            ],
+            "AAAA": [
+                "2606:4700:10::6814:3744",
+                "2606:4700:10::6814:4244",
+                "2606:4700:10::ac43:101"
+            ],
+            "MX": [
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 1
+                },
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 10
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 10
+                }
+            ],
+            "NS": [
+                "cody.ns.cloudflare.com",
+                "jill.ns.cloudflare.com"
+            ],
+            "TXT": [
+                [
+                    "protonmail-verification=126f34f8b2e0ecd213366f90c6fa769277a5b0e4"
+                ],
+                [
+                    "google-site-verification=Oe-1_WCNbN6orjJDgh9yVPXOtHJRKfvpE0C8jSFyEL4"
+                ],
+                [
+                    "google-site-verification=YZv-YEuQo3mu7lcePUZNGd3oQTuwaFHeK0fCQ64zflU"
+                ],
+                [
+                    "_globalsign-domain-verification=FKesxtODz-w8f5w2n2G2_C4o4UD3qqzYf1gcONSKdk"
+                ],
+                [
+                    "ahrefs-site-verification_565db06b430d9047afa9633d614c14f5f8d681f1a294814de0df0cab59b66ac1"
+                ],
+                [
+                    "v=spf1 include:_spf.google.com include:5514032.spf10.hubspotemail.net include:post.xero.com include:shops.shopify.com include:datadrivenemail.com ~all"
+                ],
+                [
+                    "postman-domain-verification=9f381b54883d2575983c6f92b7718db6bcb4f87d8f0f49aa0e0c2fc56521bbc724d65cbe5fefa5127d08dd644c923e2d745e931a254e99080f94968631122da5"
+                ]
+            ],
+            "SOA": {
+                "nsname": "cody.ns.cloudflare.com",
+                "hostmaster": "dns.cloudflare.com",
+                "serial": 2036316288,
+                "refresh": 10000,
+                "retry": 2400,
+                "expire": 604800,
+                "minttl": 3600
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:18:46.102Z",
+            "hostname": "scanme.nmap.org",
+            "parameters": [
+                [
+                    "-sT",
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "scanme.nmap.org",
+            "ip": "45.33.32.156",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 22,
+                    "protocol": "tcp",
+                    "service": "ssh",
+                    "method": "table"
+                },
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:22:41.316Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "192.124.249.10"
+            ],
+            "AAAA": "Scan was unable to complete successfully: Error: queryAaaa ENODATA kali.org",
+            "MX": [
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 15
+                },
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 20
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 25
+                },
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 10
+                }
+            ]
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:23:04.599Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "TXT": [
+                [
+                    "mjb3j7d41a5qd3i4qo8j8d9q7g"
+                ],
+                [
+                    "v=spf1 a ip4:23.239.31.82 ip4:208.88.127.98 ip4:52.44.83.41 include:_spf.google.com ~all"
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.gandi.net",
+                "hostmaster": "hostmaster.gandi.net",
+                "serial": 1611187200,
+                "refresh": 10800,
+                "retry": 3600,
+                "expire": 604800,
+                "minttl": 10800
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:23:29.358Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "kali.org",
+            "ip": "192.124.249.10",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
     }
 ]

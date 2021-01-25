@@ -1,0 +1,185 @@
+[
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-24T23:24:50.720Z",
+            "hostname": "google.com",
+            "parameters": [
+                [
+                    "-sT",
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "google.com",
+            "ip": "172.217.18.206",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T08:14:05.019Z",
+            "hostname": "google.com",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "172.217.18.206"
+            ],
+            "AAAA": [
+                "2a00:1450:4007:805::200e"
+            ],
+            "MX": [
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 20
+                },
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 30
+                },
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 10
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 40
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 50
+                }
+            ],
+            "NS": [
+                "ns3.google.com",
+                "ns1.google.com",
+                "ns4.google.com",
+                "ns2.google.com"
+            ],
+            "TXT": [
+                [
+                    "v=spf1 include:_spf.google.com ~all"
+                ],
+                [
+                    "docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e"
+                ],
+                [
+                    "docusign=1b0a6754-49b1-4db5-8540-d2c12664b289"
+                ],
+                [
+                    "facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95"
+                ],
+                [
+                    "globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8="
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.google.com",
+                "hostmaster": "dns-admin.google.com",
+                "serial": 353492637,
+                "refresh": 900,
+                "retry": 900,
+                "expire": 1800,
+                "minttl": 60
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T08:14:16.426Z",
+            "hostname": "nmap.org",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "45.33.49.119"
+            ],
+            "AAAA": [
+                "2600:3c01:e000:3e6::6d4e:7061"
+            ],
+            "MX": [
+                {
+                    "exchange": "ASPMX2.GOOGLEMAIL.COM",
+                    "priority": 10
+                },
+                {
+                    "exchange": "ASPMX3.GOOGLEMAIL.COM",
+                    "priority": 10
+                },
+                {
+                    "exchange": "ALT1.ASPMX.L.GOOGLE.COM",
+                    "priority": 5
+                },
+                {
+                    "exchange": "ALT2.ASPMX.L.GOOGLE.COM",
+                    "priority": 5
+                },
+                {
+                    "exchange": "ASPMX.L.GOOGLE.COM",
+                    "priority": 1
+                }
+            ],
+            "NS": [
+                "ns2.linode.com",
+                "ns4.linode.com",
+                "ns5.linode.com",
+                "ns3.linode.com",
+                "ns1.linode.com"
+            ],
+            "TXT": [
+                [
+                    "v=spf1 a mx ptr ip4:45.33.49.119 ip6:2600:3c01::f03c:91ff:fe98:ff4e ip6:2600:3c01:e000:3e6::6d4e:7061 include:_spf.google.com ~all"
+                ],
+                [
+                    "google-site-verification=SrtYpJGxZzMTcczZG44XtLVK-sEPit9bputDjWc0lF4"
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.linode.com",
+                "hostmaster": "hostmaster.insecure.org",
+                "serial": 2021000008,
+                "refresh": 14400,
+                "retry": 14400,
+                "expire": 1209600,
+                "minttl": 3600
+            }
+        }
+    }
+]

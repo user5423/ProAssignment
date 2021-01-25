@@ -1,3 +1,5 @@
+//NOTE: Unfinished
+
 const os = require("os");
 const {exec} = require("child_process");
 

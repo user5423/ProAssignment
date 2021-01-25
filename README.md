@@ -8,12 +8,12 @@ NOTE: Mess around with the site first before doing the testing!!!!
 IMPORTANT !!!!!!!!!!!!!!!!!!
 
 
-YOU NEED TO INSTALL NMAP
+## YOU NEED TO INSTALL NMAP
 
     ---> This cannot be done via npm!
 
     1) Using the installers for win/macOS provided install with default settings, or install from https://nmap.org/download.html
-    2) Find the path of the executable in the installed folder
+    2) Find the path of the executable in the installed folder -- this should be nmap.exe or whatever it is on your system (under the Nmap folder)
     3) Add that path over to the top of server.js where it should have a variable nmap.nmapLocation = "yourPath"
 
     If you are linux, you can install nmap with most default repos else:
@@ -22,20 +22,27 @@ YOU NEED TO INSTALL NMAP
         3) sudo apt-get install nmap
         4) Find the path of the binary in /bin or wherever it is and set the variable nmap.nmapLocation = "binaryFile" to it
 
+## There are detailed instructions on how to install it at nmap.org
+
+    https://nmap.org/download.html
 
 
 
 
 
+## NOTE 1: If you didn't install it and you ran the nmap scan. You need to save the reports.json with an empty array []
+
+## NOTE 2: Node-nmap module no longer allows -sS and -sT parameters on the same scan. 
+
+While this is done frequently with regular nmap, I've left this open on the form , so that if node-nmap releases an update, it will function correctly
+
+## NOTE 3: The server is listening at http://127.0.0.1:4444/ -- Remember it is listening on port 4444, not 80
 
 
 
 
 
-
-
-
-A couple app behaviour that may be misinterpreted as errors:
+## A couple app behaviour that may be misinterpreted as errors:
     DNS Scan:
 
             ##The reason you may get "execution failed errors" on the report is because you tried to lookup a record incorrectly for a host. e.g. If you are trying to get cname of google.com, this doesn't really make sense as the canonical name of google.com is google.com -- this has changed mostly with validation
@@ -57,7 +64,7 @@ A couple app behaviour that may be misinterpreted as errors:
 
 
 
-There are a few known bugs/errors/invalid-behaviours:
+## There are a few known bugs/errors/invalid-behaviours:
 
     1) There is only one known flaw with the GUI forms, and it's that the "search Host" isn't extensive in terms of it's validation. 
     It's quite time consuming than any other sort of validation, and this isn't a production webapp so I'm not going to bother with that. It's especially long when you need to consider different types of addressing schemes and types of locators/paths. 
@@ -70,9 +77,9 @@ There are a few known bugs/errors/invalid-behaviours:
     4) NOTE: If you drop the server during execution of a scan, the report will come out mal-formed - this is only an issue for nmap scans as these take quite a long time to execute
 
 
-Certain behaviours that you may consider errors, but are NOT:
+## Certain behaviours that you may consider errors, but are NOT:
 
-    1) If you assume that you should have got a 400 code instead of a 200 code, it's likely that eithee one of two things:
+    1) If you assume that you should have got a 400 code instead of a 200 code, it's likely that either one of two things:
 
         ##1. We fixed invalid parameters through sanitation -- e.g. eliminating double parameters, invalid parameters etc
         ##2. The request was dropped quiety with no outright error and so instead just returned an emtpy array or something similar

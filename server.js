@@ -13,6 +13,18 @@ app.use(express.static("js"));
 app.use(express.json());
 
 
+
+//NOTE: Here you need to change if linux or windows. Make sure to point to the executable/binary,
+//NOTE: Make sure that you are not pointing to the setup installer
+//NOTE: Make sure that you are using \\ for windows and / for linux
+nmap.nmapLocation = "C:\\Program Files (x86)\\Nmap\\Nmap.exe"; //default Windows install
+
+
+
+
+
+
+
 //TODO: We want to change this to {} so to avoid issues with race conditions on list deletion
 var runningScans = [];
 var finishedScans = getPersistentReports();
@@ -279,7 +291,7 @@ function isValidHostname(hostname){
 
 function executeNmapScan(hostname, params){
     //TODO check whether nmap is in path
-    nmap.nmapLocation = "./Nmap/nmap.exe"; //default
+    // nmap.nmapLocation = "nmap"; //default
     var nmapscan = new nmap.NmapScan(hostname, params);
     var reportObject = logScanAsRunning("nmapscan", hostname, params);
 

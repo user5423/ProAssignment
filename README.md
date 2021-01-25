@@ -5,6 +5,35 @@ NOTE: Mess around with the site first before doing the testing!!!!
 
 
 
+IMPORTANT !!!!!!!!!!!!!!!!!!
+
+
+YOU NEED TO INSTALL NMAP
+
+    ---> This cannot be done via npm!
+
+    1) Using the installers for win/macOS provided install with default settings, or install from https://nmap.org/download.html
+    2) Find the path of the executable in the installed folder
+    3) Add that path over to the top of server.js where it should have a variable nmap.nmapLocation = "yourPath"
+
+    If you are linux, you can install nmap with most default repos else:
+        1) add kali repos to your /etc/sources.list
+        2) sudo apt-get update
+        3) sudo apt-get install nmap
+        4) Find the path of the binary in /bin or wherever it is and set the variable nmap.nmapLocation = "binaryFile" to it
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 A couple app behaviour that may be misinterpreted as errors:
     DNS Scan:

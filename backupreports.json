@@ -1,0 +1,464 @@
+[
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-24T23:24:50.720Z",
+            "hostname": "google.com",
+            "parameters": [
+                [
+                    "-sT",
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "google.com",
+            "ip": "172.217.18.206",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T08:14:05.019Z",
+            "hostname": "google.com",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "172.217.18.206"
+            ],
+            "AAAA": [
+                "2a00:1450:4007:805::200e"
+            ],
+            "MX": [
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 20
+                },
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 30
+                },
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 10
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 40
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 50
+                }
+            ],
+            "NS": [
+                "ns3.google.com",
+                "ns1.google.com",
+                "ns4.google.com",
+                "ns2.google.com"
+            ],
+            "TXT": [
+                [
+                    "v=spf1 include:_spf.google.com ~all"
+                ],
+                [
+                    "docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e"
+                ],
+                [
+                    "docusign=1b0a6754-49b1-4db5-8540-d2c12664b289"
+                ],
+                [
+                    "facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95"
+                ],
+                [
+                    "globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8="
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.google.com",
+                "hostmaster": "dns-admin.google.com",
+                "serial": 353492637,
+                "refresh": 900,
+                "retry": 900,
+                "expire": 1800,
+                "minttl": 60
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T08:14:16.426Z",
+            "hostname": "nmap.org",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "45.33.49.119"
+            ],
+            "AAAA": [
+                "2600:3c01:e000:3e6::6d4e:7061"
+            ],
+            "MX": [
+                {
+                    "exchange": "ASPMX2.GOOGLEMAIL.COM",
+                    "priority": 10
+                },
+                {
+                    "exchange": "ASPMX3.GOOGLEMAIL.COM",
+                    "priority": 10
+                },
+                {
+                    "exchange": "ALT1.ASPMX.L.GOOGLE.COM",
+                    "priority": 5
+                },
+                {
+                    "exchange": "ALT2.ASPMX.L.GOOGLE.COM",
+                    "priority": 5
+                },
+                {
+                    "exchange": "ASPMX.L.GOOGLE.COM",
+                    "priority": 1
+                }
+            ],
+            "NS": [
+                "ns2.linode.com",
+                "ns4.linode.com",
+                "ns5.linode.com",
+                "ns3.linode.com",
+                "ns1.linode.com"
+            ],
+            "TXT": [
+                [
+                    "v=spf1 a mx ptr ip4:45.33.49.119 ip6:2600:3c01::f03c:91ff:fe98:ff4e ip6:2600:3c01:e000:3e6::6d4e:7061 include:_spf.google.com ~all"
+                ],
+                [
+                    "google-site-verification=SrtYpJGxZzMTcczZG44XtLVK-sEPit9bputDjWc0lF4"
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.linode.com",
+                "hostmaster": "hostmaster.insecure.org",
+                "serial": 2021000008,
+                "refresh": 14400,
+                "retry": 14400,
+                "expire": 1209600,
+                "minttl": 3600
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:18:35.745Z",
+            "hostname": "hackthebox.eu",
+            "parameters": [
+                [
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "hackthebox.eu",
+            "ip": "104.20.55.68",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:18:53.850Z",
+            "hostname": "null-byte.wonderhowto.com",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "104.193.19.59"
+            ],
+            "AAAA": "Scan was unable to complete successfully: Error: queryAaaa ENODATA null-byte.wonderhowto.com",
+            "MX": "Scan was unable to complete successfully: Error: queryMx ENODATA null-byte.wonderhowto.com"
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:19:07.570Z",
+            "hostname": "hackthebox.eu",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX",
+                    "NS",
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "104.20.55.68",
+                "104.20.66.68",
+                "172.67.1.1"
+            ],
+            "AAAA": [
+                "2606:4700:10::6814:3744",
+                "2606:4700:10::6814:4244",
+                "2606:4700:10::ac43:101"
+            ],
+            "MX": [
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 1
+                },
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 10
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 10
+                }
+            ],
+            "NS": [
+                "cody.ns.cloudflare.com",
+                "jill.ns.cloudflare.com"
+            ],
+            "TXT": [
+                [
+                    "protonmail-verification=126f34f8b2e0ecd213366f90c6fa769277a5b0e4"
+                ],
+                [
+                    "google-site-verification=Oe-1_WCNbN6orjJDgh9yVPXOtHJRKfvpE0C8jSFyEL4"
+                ],
+                [
+                    "google-site-verification=YZv-YEuQo3mu7lcePUZNGd3oQTuwaFHeK0fCQ64zflU"
+                ],
+                [
+                    "_globalsign-domain-verification=FKesxtODz-w8f5w2n2G2_C4o4UD3qqzYf1gcONSKdk"
+                ],
+                [
+                    "ahrefs-site-verification_565db06b430d9047afa9633d614c14f5f8d681f1a294814de0df0cab59b66ac1"
+                ],
+                [
+                    "v=spf1 include:_spf.google.com include:5514032.spf10.hubspotemail.net include:post.xero.com include:shops.shopify.com include:datadrivenemail.com ~all"
+                ],
+                [
+                    "postman-domain-verification=9f381b54883d2575983c6f92b7718db6bcb4f87d8f0f49aa0e0c2fc56521bbc724d65cbe5fefa5127d08dd644c923e2d745e931a254e99080f94968631122da5"
+                ]
+            ],
+            "SOA": {
+                "nsname": "cody.ns.cloudflare.com",
+                "hostmaster": "dns.cloudflare.com",
+                "serial": 2036316288,
+                "refresh": 10000,
+                "retry": 2400,
+                "expire": 604800,
+                "minttl": 3600
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:18:46.102Z",
+            "hostname": "scanme.nmap.org",
+            "parameters": [
+                [
+                    "-sT",
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "scanme.nmap.org",
+            "ip": "45.33.32.156",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 22,
+                    "protocol": "tcp",
+                    "service": "ssh",
+                    "method": "table"
+                },
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:22:41.316Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "A",
+                    "AAAA",
+                    "MX"
+                ]
+            ]
+        },
+        "scan results": {
+            "A": [
+                "192.124.249.10"
+            ],
+            "AAAA": "Scan was unable to complete successfully: Error: queryAaaa ENODATA kali.org",
+            "MX": [
+                {
+                    "exchange": "alt2.aspmx.l.google.com",
+                    "priority": 15
+                },
+                {
+                    "exchange": "aspmx.l.google.com",
+                    "priority": 5
+                },
+                {
+                    "exchange": "alt3.aspmx.l.google.com",
+                    "priority": 20
+                },
+                {
+                    "exchange": "alt4.aspmx.l.google.com",
+                    "priority": 25
+                },
+                {
+                    "exchange": "alt1.aspmx.l.google.com",
+                    "priority": 10
+                }
+            ]
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "dnsscan",
+            "timedate": "2021-01-25T09:23:04.599Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "TXT",
+                    "SOA"
+                ]
+            ]
+        },
+        "scan results": {
+            "TXT": [
+                [
+                    "mjb3j7d41a5qd3i4qo8j8d9q7g"
+                ],
+                [
+                    "v=spf1 a ip4:23.239.31.82 ip4:208.88.127.98 ip4:52.44.83.41 include:_spf.google.com ~all"
+                ]
+            ],
+            "SOA": {
+                "nsname": "ns1.gandi.net",
+                "hostmaster": "hostmaster.gandi.net",
+                "serial": 1611187200,
+                "refresh": 10800,
+                "retry": 3600,
+                "expire": 604800,
+                "minttl": 10800
+            }
+        }
+    },
+    {
+        "scan descriptor": {
+            "scanname": "nmapscan",
+            "timedate": "2021-01-25T09:23:29.358Z",
+            "hostname": "kali.org",
+            "parameters": [
+                [
+                    "-p1-1000"
+                ]
+            ]
+        },
+        "scan results": {
+            "hostname": "kali.org",
+            "ip": "192.124.249.10",
+            "mac": null,
+            "openPorts": [
+                {
+                    "port": 80,
+                    "protocol": "tcp",
+                    "service": "http",
+                    "method": "table"
+                },
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "service": "https",
+                    "method": "table"
+                }
+            ],
+            "osNmap": null
+        }
+    }
+]

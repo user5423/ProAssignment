@@ -10,7 +10,10 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
 
 ## YOU NEED TO INSTALL NMAP
 
-    ---> This cannot be done via npm!
+    ---> This cannot be done via npm so requires manual installation!
+
+    If you can install it on Windows please do so. I haven't tested it on other systems (except debian, but limited testing)
+
 
     1) Using the installers for win/macOS provided install with default settings, or install from https://nmap.org/download.html
     2) Find the path of the executable in the installed folder -- this should be nmap.exe or whatever it is on your system (under the Nmap folder)
@@ -22,9 +25,22 @@ IMPORTANT !!!!!!!!!!!!!!!!!!
         3) sudo apt-get install nmap
         4) Find the path of the binary in /bin or wherever it is and set the variable nmap.nmapLocation = "binaryFile" to it
 
+    Otherwise:
+        use "whereis nmap" to find the location of the binary. Note the path of the binary might be  /usr/bin/nmap as it was in mine for Kali Linux. Therefore the path would have beem nmap.nmapLocation = "/usr/bin/nmap". For kali, it only worked when I pointed to "/usr/bin/" and didn't when "/usr/bin/nmap". This isn't my fault as this node-nmap module was written poorly.
+
+## NOTE if the site still doesn't work. 
+
+    1) If the scan reports scan shows an erros, Shut down the server
+    2) Reset reports.json to [] and save
+    3) Try setting the nmap.nmapLocation = "the/folder/containingnmap/" instead of the path to binary i.ea "the/folder/containingnmap/nmapfile"
+
+
 ## There are detailed instructions on how to install it at nmap.org
 
     https://nmap.org/download.html
+
+
+
 
 
 

@@ -18,7 +18,9 @@ app.use(express.json());
 //NOTE: Make sure that you are not pointing to the setup installer
 //NOTE: Make sure that you are using \\ for windows and / for linux
 nmap.nmapLocation = "C:\\Program Files (x86)\\Nmap\\Nmap.exe"; //default Windows install
+// nmap.nmapLocation = "/usr/bin"; //default Linux folder
 
+//NOTE: Make sure only one instance of nmap.nmapLocation is active
 
 
 
